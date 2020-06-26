@@ -1,0 +1,20 @@
+.map-info-window-container {
+  text-align: center;
+
+  $maxWidth: 300px;
+
+  .insta-image {
+    width: $maxWidth;
+  }
+
+  .author {
+    padding: 10px 0;
+    margin: 10px 0;
+    background-color: #eee;
+  }
+
+  .caption {
+    max-width: $maxWidth;
+    text-align: left;
+  }
+}
