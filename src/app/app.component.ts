@@ -1,6 +1,6 @@
 import { Component, ViewChild } from '@angular/core';
 import { GoogleMap, MapInfoWindow, MapMarker } from '@angular/google-maps';
-import { last } from 'lodash';
+import { get, last } from 'lodash';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
@@ -37,7 +37,7 @@ export class AppComponent {
     this.retrievePosts(new google.maps.LatLng(this.defaultOptions.center.lat, this.defaultOptions.center.lng));
   }
 
-  mapDragend() {
+  mapChange() {
     if (this.googleMap) {
       const center = this.googleMap.getCenter();
       this.mapCenter$.next(center);
@@ -50,21 +50,22 @@ export class AppComponent {
     this.infoWindow.open(markerAnchor);
   }
 
-  private getIconUrl(post: InstaPost): string {
-    const images = post?.image_versions2?.candidates || [];
-    const lastImage = last(images);
-    return lastImage?.url || '';
-  }
-
   private retrievePosts(center: google.maps.LatLng) {
     this.apiService.getMarkers(center.lat(), center.lng()).subscribe(posts => {
       posts.forEach(post => {
         const alreadyExists = this.posts.find(postInLoop => postInLoop.code === post.code);
         if (!alreadyExists) {
+
+          // Icon
+          const images = post?.image_versions2?.candidates || [];
+          const lastImage = last(images);
+          const icon = lastImage?.url || '';
+
+          // Marker options
           post.markerOptions = {
             position: {
-              lat: post?.location.geopoint._latitude,
-              lng: post?.location.geopoint._longitude
+              lat: get(post, 'location.geopoint._latitude') || get(post, 'location.latitude'),
+              lng: get(post, 'location.geopoint._longitude') || get(post, 'location.longitude')
             },
             // icon: {
             //   scaledSize: {
