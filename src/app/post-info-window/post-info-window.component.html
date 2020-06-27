@@ -3,7 +3,7 @@
         <img src="{{ (post?.image_versions2?.candidates)[0].url }}" class="insta-image" />
     </a>
     <div class="author">
-        by <a href="'https://instagram.com/' + post?.user.name" target="_blank">@{{ post?.user.name }}</a> | {{ post?.taken_at * 1000 | dateAgo }}
+        by <a href="'https://instagram.com/' + post?.user.name" target="_blank">@{{ post?.user.name }}</a> | {{ post?.taken_at * 1000 | dateAgo }} | ❤️{{ post?.like_count }}
     </div>
     <div class="caption">{{ post?.caption }}</div>
 </div>

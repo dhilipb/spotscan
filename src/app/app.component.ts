@@ -52,33 +52,52 @@ export class AppComponent {
 
   private retrievePosts(center: google.maps.LatLng) {
     this.apiService.getMarkers(center.lat(), center.lng()).subscribe(posts => {
-      posts.forEach(post => {
-        const alreadyExists = this.posts.find(postInLoop => postInLoop.code === post.code);
-        if (!alreadyExists) {
+      this.updatePosts(posts);
+    });
+  }
 
-          // Icon
-          const images = post?.image_versions2?.candidates || [];
-          const lastImage = last(images);
-          const icon = lastImage?.url || '';
+  closeInfoWindow() {
+    this.infoWindow.close();
+  }
 
-          // Marker options
-          post.markerOptions = {
-            position: {
-              lat: get(post, 'location.geopoint._latitude') || get(post, 'location.latitude'),
-              lng: get(post, 'location.geopoint._longitude') || get(post, 'location.longitude')
-            },
-            // icon: {
-            //   scaledSize: {
-            //     width: 50,
-            //     height: 50
-            //   },
-            //   url: this.getIconUrl(post)
-            // },
-            draggable: false
-          } as google.maps.MarkerOptions;
-          this.posts.push(post);
-        }
+  deleteMarker(post: InstaPost) {
+    if (post.code) {
+      this.apiService.deleteMarker(post.code).subscribe(() => {
+        const index = this.posts.findIndex(postX => postX.code === post.code);
+        this.posts.splice(index, 1);
       });
+    }
+  }
+
+  discover(event) {
+    const latitude = event.latLng.lat();
+    const longitude = event.latLng.lng();
+    console.log(event);
+    this.apiService.discoverSpot(latitude, longitude).subscribe(posts => {
+      this.updatePosts(posts);
+    });
+  }
+
+  private updatePosts(posts: InstaPost[]) {
+    posts.forEach(post => {
+      const alreadyExists = this.posts.find(postInLoop => postInLoop.code === post.code);
+      if (!alreadyExists) {
+
+        // Icon
+        const images = post?.image_versions2?.candidates || [];
+        const lastImage = last(images);
+        const icon = lastImage?.url || '';
+
+        // Marker options
+        post.markerOptions = {
+          position: {
+            lat: get(post, 'location.geopoint._latitude') || get(post, 'location.latitude'),
+            lng: get(post, 'location.geopoint._longitude') || get(post, 'location.longitude')
+          },
+          draggable: false
+        } as google.maps.MarkerOptions;
+        this.posts.push(post);
+      }
     });
   }
 

@@ -19,4 +19,12 @@ export class ApiService {
     return this.httpClient.get<InstaPost[]>(this.BASE + `/markers/${latitude}/${longitude}`);
   }
 
+  public deleteMarker(markerCode: string): Observable<any> {
+    return this.httpClient.delete(this.BASE + `/markers/${markerCode}`);
+  }
+
+  public discoverSpot(latitude: number, longitude: number): Observable<any> {
+    return this.httpClient.get(this.BASE + `/discover/location/${latitude}/${longitude}`);
+  }
+
 }
