@@ -1,5 +1,5 @@
 <!-- Official docs at https://github.com/angular/components/blob/master/src/google-maps/README.md -->
-<google-map width="100%" height="100vh" [center]="defaultOptions.center" [zoom]="defaultOptions.zoom" (centerChange)="mapChange()" (mapClick)="closeInfoWindow()" (mapRightclick)="discover($event)">
+<google-map width="100%" height="100vh" [center]="defaultOptions.center" [zoom]="defaultOptions.zoom" (centerChanged)="mapChange()" (mapClick)="closeInfoWindow()" (mapRightclick)="discover($event)">
     <map-marker #markerElem *ngFor="let post of posts" [options]="post.markerOptions" (mapClick)="openInfoWindow(markerElem, post)" (mapRightclick)="deleteMarker(post)"></map-marker>
     <map-info-window>
         <ss-post-info-window [post]="selectedPost"></ss-post-info-window>
