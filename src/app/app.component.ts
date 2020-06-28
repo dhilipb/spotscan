@@ -1,10 +1,10 @@
 import { Component, ViewChild } from '@angular/core';
 import { GoogleMap, MapInfoWindow, MapMarker } from '@angular/google-maps';
+import { InstaPost } from '@shared/models';
 import { get, last } from 'lodash';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
-import { InstaPost } from './models/simple-post';
 import { ApiService } from './services';
 
 @Component({

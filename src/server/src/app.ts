@@ -7,6 +7,7 @@ import { InstagramClient, Logger } from './helpers';
 import { AppRouteController } from './http-controllers/app-route.controller';
 
 
+
 @injectable()
 class InstaMapsApp {
   private readonly logger: Logger = new Logger(this);

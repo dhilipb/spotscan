@@ -8,8 +8,8 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "start:server": "cd server && tsnd --respawn --rs --watch *.ts --clear src/app.ts",
-    "build:server": "cd server && tsc",
+    "start:server": "cd src/server && tsnd --respawn --rs --watch *.ts --clear src/app.ts",
+    "build:server": "cd src/server && tsc",
     "build:all": "npm run build && npm run build:server",
     "start:build": "node dist/src/app.js",
     "build:server:start": "npm run build:server && npm run start:build"

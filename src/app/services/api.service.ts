@@ -1,8 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { InstaPost } from 'shared';
 
-import { InstaPost } from '../models/simple-post';
 
 @Injectable({
   providedIn: 'root'

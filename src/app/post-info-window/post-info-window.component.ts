@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
+import { InstaPost } from 'shared';
 
-import { InstaPost } from '../models/simple-post';
 
 @Component({
   selector: 'ss-post-info-window',

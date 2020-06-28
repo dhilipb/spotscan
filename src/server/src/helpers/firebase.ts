@@ -2,14 +2,13 @@ import * as firebase from 'firebase-admin';
 import { isNil } from 'lodash';
 import { singleton } from 'tsyringe';
 
+import { InstaPost } from '../../../shared/models/insta-post';
 import * as serviceAccount from '../../secret/firebase.json';
-import { SimplePost } from '../models';
 import { Config } from './config';
 import { GeoFireUtil, GeoQueryArea } from './geofire.util';
 import { Logger } from './logger';
 
 import GeoPoint = firebase.firestore.GeoPoint;
-
 // tslint:disable: max-classes-per-file
 firebase.initializeApp({
   credential: firebase.credential.cert({
@@ -82,7 +81,7 @@ class GenericFirebase<T> {
 @singleton()
 export class FirebaseClient {
   private readonly logger: Logger = new Logger(this);
-  public posts: GenericFirebase<SimplePost> = new GenericFirebase('posts');
+  public posts: GenericFirebase<InstaPost> = new GenericFirebase('posts');
   public tags: GenericFirebase<any> = new GenericFirebase('tags');
   public locations: GenericFirebase<any> = new GenericFirebase('locations');
   public users: GenericFirebase<any> = new GenericFirebase('users');
