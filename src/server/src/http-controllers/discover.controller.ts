@@ -29,7 +29,7 @@ export class DiscoverController {
   public async hashtag(req: Request, res: Response): Promise<Response> {
     const hashtag = req.params.hashtag;
     this.logger.log('Retrieving for hashtag: ' + hashtag);
-    const items = await this.scraper.scrapeHashtag(hashtag);
+    const items = await this.scraper.scrapeTag(hashtag);
     return res.json({ items: items.length });
   }
 
@@ -47,6 +47,12 @@ export class DiscoverController {
       posts.push(...simplifiedPosts);
     }
     return res.json(posts);
+  }
+
+  @Get('update')
+  public async update(req: Request, res: Response): Promise<Response> {
+    await this.scraper.update();
+    return res.json({});
   }
 
 

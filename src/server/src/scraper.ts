@@ -1,7 +1,9 @@
+import { keys, shuffle } from 'lodash';
 import { injectable } from 'tsyringe';
 
 import { InstaPost } from '../../shared/models/insta-post';
-import { Logger } from './helpers';
+import { Logger, Util } from './helpers';
+import { FirebaseClient } from './helpers/firebase';
 import { ScraperUtil } from './scraper-util';
 
 @injectable()
@@ -9,7 +11,8 @@ export class Scraper {
   private readonly logger: Logger = new Logger(this);
 
   constructor(
-    private scraperUtil: ScraperUtil
+    private scraperUtil: ScraperUtil,
+    private firebaseClient: FirebaseClient
   ) { }
 
   async scrapeUser(username: string, storeResults: boolean = true): Promise<InstaPost[]> {
@@ -24,12 +27,12 @@ export class Scraper {
     }
     return simplifiedPosts;
   }
-  async scrapeHashtag(hashtag: string, storeResults: boolean = true): Promise<InstaPost[]> {
-    if (!hashtag) {
+  async scrapeTag(tag: string, storeResults: boolean = true): Promise<InstaPost[]> {
+    if (!tag) {
       return [];
     }
 
-    const posts = await this.scraperUtil.getByHashtag(hashtag);
+    const posts = await this.scraperUtil.getByHashtag(tag);
     const simplifiedPosts: InstaPost[] = posts.map(this.scraperUtil.transformPost).filter(post => post);
     if (storeResults) {
       await this.scraperUtil.storePosts(simplifiedPosts);
@@ -47,6 +50,27 @@ export class Scraper {
       await this.scraperUtil.storePosts(simplifiedPosts);
     }
     return simplifiedPosts;
+  }
+
+  async update(): Promise<void> {
+    const users = shuffle(keys(await this.firebaseClient.users.get() || {}));
+    const tags = shuffle(keys(await this.firebaseClient.tags.get() || {}));
+    const locations = shuffle(keys(await this.firebaseClient.locations.get() || {}));
+
+    for (const user of users) {
+      this.logger.log("Scraping user", user);
+      await this.scrapeUser(user);
+    }
+    await Util.randomSleep();
+    for (const tag of tags) {
+      this.logger.log("Scraping tag", tag);
+      await this.scrapeTag(tag);
+    }
+    await Util.randomSleep();
+    for (const location of locations) {
+      this.logger.log("Scraping location", location);
+      await this.scrapeLocation(location);
+    }
   }
 
 }

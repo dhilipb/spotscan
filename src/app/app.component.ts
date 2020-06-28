@@ -91,8 +91,8 @@ export class AppComponent {
         // Marker options
         post.markerOptions = {
           position: {
-            lat: get(post, 'location.geopoint._latitude') || get(post, 'location.latitude'),
-            lng: get(post, 'location.geopoint._longitude') || get(post, 'location.longitude')
+            lat: get(post, 'location.lat'),
+            lng: get(post, 'location.lng')
           },
           draggable: false
         } as google.maps.MarkerOptions;

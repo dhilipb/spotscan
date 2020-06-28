@@ -23,7 +23,7 @@ const firestore = firebase.firestore();
 
 const WHAT_IF = Config.whatIfMode;
 
-class GenericFirebase<T> {
+export class GenericFirebase<T> {
   private readonly logger: Logger = new Logger(this);
   private ref: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData>;
   public geoFireUtil: GeoFireUtil;
@@ -70,8 +70,8 @@ class GenericFirebase<T> {
     await this.ref.doc(key).delete();
   }
 
-  async geoQuery(center: GeoPoint, radius: number = 30, field: string = 'location.geopoint'): Promise<any> {
-    const result = await this.geoFireUtil.getLocations({ center, radius } as GeoQueryArea, field);
+  async geoQuery(center: GeoPoint, radiusKm: number = 15, field: string = 'location.geopoint'): Promise<any> {
+    const result = await this.geoFireUtil.getLocations({ center, radius: radiusKm } as GeoQueryArea, field);
     this.logger.log('Items found:', result.length);
     return result;
   }

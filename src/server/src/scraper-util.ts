@@ -1,9 +1,10 @@
 import { LocationFeedResponseMedia, TagFeedResponseItemsItem } from 'instagram-private-api';
-import { has, keys } from 'lodash';
+import { get, has, keys } from 'lodash';
 import { injectable } from 'tsyringe';
 
 import { InstaPost, InstaResponseItem, UserFeedResponseItem } from '../../shared/models/insta-post';
-import { FirebaseClient, InstagramClient, Logger } from './helpers';
+import { FirebaseClient, GenericFirebase, InstagramClient, Logger } from './helpers';
+import { GeoFireUtil } from './helpers/geofire.util';
 import { InstagramUtil } from './instagram-util';
 
 
@@ -24,18 +25,16 @@ export class ScraperUtil {
       return null;
     }
 
-    // const simplifiedPost = {
-    //   ...post,
-    //   code: post.code,
-    //   location: { latitude: +post.location.lat, longitude: +post.location.lng },
-    //   user: {
-    //     name: post.user.username,
-    //     full_name: post.user.full_name,
-    //     pic: post.user.profile_pic_url,
-    //   },
-    // };
+    const instaPost = post as InstaPost;
+    const lat = get(post, 'location.latitude') || get(post, 'location.lat');
+    const lng = get(post, 'location.longitude') || get(post, 'location.lng');
+    if (!lat || !lng) {
+      return null;
+    }
 
-    return post as unknown as InstaPost;
+    instaPost.location.geopoint = GeoFireUtil.createLocation(+lat, +lng);
+
+    return instaPost;
   }
 
   async storePosts(posts: InstaPost[]): Promise<void> {
@@ -57,12 +56,8 @@ export class ScraperUtil {
       const feed = await this.instagram.feed.user(account.pk);
 
       // Get pages to scrape
-      let pagesToScrape = 5;
-      const usersScraped = (await this.firebaseClient.users.get()) || {};
+      const pagesToScrape = await this.getPagesToScrape(this.firebaseClient.users, user);
       await this.firebaseClient.users.add(user, { lastScraped: new Date(), ...account });
-      if (!user.includes(keys(usersScraped))) {
-        pagesToScrape = 1;
-      }
 
       const posts: UserFeedResponseItem[] = [];
       for (let i = 0; i < pagesToScrape; i++) {
@@ -81,12 +76,8 @@ export class ScraperUtil {
     const feed = await this.instagram.feed.tags(hashtag, 'top');
 
     // Get pages to scrape
-    let pagesToScrape = 5;
-    const tagsScraped = (await this.firebaseClient.tags.get()) || {};
+    const pagesToScrape = await this.getPagesToScrape(this.firebaseClient.tags, hashtag);
     await this.firebaseClient.tags.add(hashtag, { lastScraped: new Date() });
-    if (!hashtag.includes(keys(tagsScraped))) {
-      pagesToScrape = 1;
-    }
 
     const posts: TagFeedResponseItemsItem[] = [];
     for (let i = 0; i < pagesToScrape; i++) {
@@ -103,12 +94,8 @@ export class ScraperUtil {
     const feed = await this.instagram.feed.location(locationId, 'ranked');
 
     // Get pages to scrape
-    let pagesToScrape = 5;
-    const tagsScraped = (await this.firebaseClient.locations.get()) || {};
+    const pagesToScrape = await this.getPagesToScrape(this.firebaseClient.locations, locationId);
     await this.firebaseClient.locations.add(locationId, { lastScraped: new Date() });
-    if (!locationId.includes(keys(tagsScraped))) {
-      pagesToScrape = 1;
-    }
 
     const posts: LocationFeedResponseMedia[] = [];
     for (let i = 0; i < pagesToScrape; i++) {
@@ -117,6 +104,15 @@ export class ScraperUtil {
     const filteredPosts = posts.filter(post => InstagramUtil.isValidImage(post) && InstagramUtil.hasHighLikeCount(post));
     this.logger.log(locationId, 'Retrieved', filteredPosts.length, 'items');
     return filteredPosts;
+  }
+
+  private async getPagesToScrape(firebaseCollection: GenericFirebase<any>, itemToSearch: string | number): Promise<number> {
+    let pagesToScrape = 5;
+    const records = (await firebaseCollection.get()) || {};
+    if (!keys(records).includes(itemToSearch)) {
+      pagesToScrape = 1;
+    }
+    return pagesToScrape;
   }
 
 }

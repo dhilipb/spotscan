@@ -15,5 +15,9 @@ export class Util {
     return ((num + '').split('.')[1] || []).length;
   }
 
+  public static async randomSleep(min: number = 500, max: number = 2000): Promise<void> {
+    await new Promise(r => setTimeout(r, Util.randomBetween(min, max)));
+  }
+
 }
 

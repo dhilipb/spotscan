@@ -1,4 +1,7 @@
+import * as firebase from 'firebase-admin';
 import { LocationFeedResponseLocation, LocationFeedResponseMedia, TagFeedResponseItemsItem, UserFeedResponseItemsItem } from 'instagram-private-api';
+
+import GeoPoint = firebase.firestore.GeoPoint;
 
 
 export interface UserFeedResponseItem extends UserFeedResponseItemsItem {
@@ -115,16 +118,8 @@ export interface InstaPost {
 }
 
 export interface SimpleLocation {
-  // geohash?: string;
-  // geopoint?: GeoPoint;
-  lat?: number;
-  lng?: number;
-  [latLng: string]: number;
-}
-
-export interface GeoPoint {
-  _latitude: number;
-  _longitude: number;
+  geopoint?: GeoPoint;
+  [location: string]: any;
 }
 
 export type InstaResponseItem = UserFeedResponseItem | TagFeedResponseItemsItem | LocationFeedResponseMedia | LocationFeedResponseMedia;
