@@ -1,6 +1,7 @@
 import { Server } from '@overnightjs/core';
 import * as cors from 'cors';
 import * as express from 'express';
+import * as morgan from 'morgan';
 import * as path from 'path';
 import { injectable } from 'tsyringe';
 
@@ -22,6 +23,7 @@ export class AppRouteController extends Server {
 
   private setupControllers(): void {
     this.app.use(cors());
+    this.app.use(morgan('dev'));
 
     const staticLocation = path.join(process.cwd(), 'dist/spotscan/');
     this.logger.log(staticLocation);

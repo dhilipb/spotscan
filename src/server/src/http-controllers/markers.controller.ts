@@ -7,7 +7,7 @@ import { GeoFireUtil } from '../helpers/geofire.util';
 import { Logger } from '../helpers/logger';
 
 @injectable()
-@Controller('markers')
+@Controller('api/markers')
 export class MarkersController {
   private readonly logger: Logger = new Logger(this);
 

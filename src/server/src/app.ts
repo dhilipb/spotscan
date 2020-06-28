@@ -7,7 +7,6 @@ import { InstagramClient, Logger } from './helpers';
 import { AppRouteController } from './http-controllers/app-route.controller';
 
 
-
 @injectable()
 class InstaMapsApp {
   private readonly logger: Logger = new Logger(this);
@@ -20,7 +19,7 @@ class InstaMapsApp {
 
   async init(): Promise<void> {
     this.appRouteController.start(+process.env.PORT || 3000);
-    // await this.setupInstagram();
+    await this.setupInstagram();
   }
 
   private async setupInstagram(): Promise<void> {

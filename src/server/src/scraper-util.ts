@@ -1,11 +1,10 @@
-import { LocationFeedResponseMedia, TagFeedResponseItemsItem, UserFeedResponseItemsItem } from 'instagram-private-api';
+import { LocationFeedResponseMedia, TagFeedResponseItemsItem } from 'instagram-private-api';
 import { has, keys } from 'lodash';
 import { injectable } from 'tsyringe';
 
-import { InstaPost } from '../../shared/models/insta-post';
+import { InstaPost, InstaResponseItem, UserFeedResponseItem } from '../../shared/models/insta-post';
 import { FirebaseClient, InstagramClient, Logger } from './helpers';
 import { InstagramUtil } from './instagram-util';
-import { InstaResponseItem } from './models';
 
 
 @injectable()
@@ -25,19 +24,18 @@ export class ScraperUtil {
       return null;
     }
 
-    const simplifiedPost = {
-      ...post,
-      code: post.code,
-      caption: post.caption?.text || '',
-      location: { latitude: +post.location.lat, longitude: +post.location.lng },
-      user: {
-        name: post.user.username,
-        full_name: post.user.full_name,
-        pic: post.user.profile_pic_url,
-      },
-    };
+    // const simplifiedPost = {
+    //   ...post,
+    //   code: post.code,
+    //   location: { latitude: +post.location.lat, longitude: +post.location.lng },
+    //   user: {
+    //     name: post.user.username,
+    //     full_name: post.user.full_name,
+    //     pic: post.user.profile_pic_url,
+    //   },
+    // };
 
-    return simplifiedPost;
+    return post as unknown as InstaPost;
   }
 
   async storePosts(posts: InstaPost[]): Promise<void> {
@@ -52,7 +50,7 @@ export class ScraperUtil {
     }
   }
 
-  async getByUser(user: string): Promise<UserFeedResponseItemsItem[]> {
+  async getByUser(user: string): Promise<UserFeedResponseItem[]> {
     this.logger.log(user, 'getByUser');
     const account = await this.instagram.client.user.searchExact(user);
     if (account) {
@@ -66,9 +64,9 @@ export class ScraperUtil {
         pagesToScrape = 1;
       }
 
-      const posts: UserFeedResponseItemsItem[] = [];
+      const posts: UserFeedResponseItem[] = [];
       for (let i = 0; i < pagesToScrape; i++) {
-        posts.push(...(await feed.items() as UserFeedResponseItemsItem[]));
+        posts.push(...(await feed.items() as UserFeedResponseItem[]));
       }
       const filteredPosts = posts.filter(InstagramUtil.isValidImage);
       this.logger.log(user, 'Retrieved', filteredPosts.length, 'items');

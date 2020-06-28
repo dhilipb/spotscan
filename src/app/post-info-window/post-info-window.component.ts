@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { InstaPost } from 'shared';
+import { InstaPost } from '@shared/models';
 
 
 @Component({

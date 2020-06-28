@@ -53,7 +53,10 @@
     // Experimental Option
     "experimentalDecorators": true, // Enables experimental support for ES7 decorators.
     "emitDecoratorMetadata": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      "@shared/*": ["./src/shared/*"]
+    }
     // Enables experimental support for emitting type metadata for decorators
   }
 }

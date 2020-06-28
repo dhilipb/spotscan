@@ -1,7 +1,9 @@
-// export interface UserFeedResponseItem extends UserFeedResponseItemsItem {
-//     location?: LocationFeedResponseLocation
-// }
+import { LocationFeedResponseLocation, LocationFeedResponseMedia, TagFeedResponseItemsItem, UserFeedResponseItemsItem } from 'instagram-private-api';
 
+
+export interface UserFeedResponseItem extends UserFeedResponseItemsItem {
+  location?: LocationFeedResponseLocation;
+}
 
 export interface ImageCandidate {
   width?: number;
@@ -106,20 +108,23 @@ export interface InstaPost {
   top_likers?: any[];
   photo_of_you?: boolean;
   can_see_insights_as_brand?: boolean;
-  caption?: Caption | string;
+  caption?: Caption;
   can_viewer_save?: boolean;
   organic_tracking_token?: string;
   [key: string]: any;
 }
 
 export interface SimpleLocation {
-  geohash?: string;
-  geopoint?: GeoPoint;
-  latitude?: number;
-  longitude?: number;
+  // geohash?: string;
+  // geopoint?: GeoPoint;
+  lat?: number;
+  lng?: number;
+  [latLng: string]: number;
 }
 
 export interface GeoPoint {
   _latitude: number;
   _longitude: number;
 }
+
+export type InstaResponseItem = UserFeedResponseItem | TagFeedResponseItemsItem | LocationFeedResponseMedia | LocationFeedResponseMedia;
