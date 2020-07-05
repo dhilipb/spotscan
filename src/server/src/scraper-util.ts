@@ -1,20 +1,22 @@
+import { getModelForClass } from '@typegoose/typegoose';
 import { LocationFeedResponseMedia, TagFeedResponseItemsItem } from 'instagram-private-api';
-import { get, has, keys } from 'lodash';
+import { get, has, toNumber } from 'lodash';
 import { injectable } from 'tsyringe';
 
 import { InstaPost, InstaResponseItem, UserFeedResponseItem } from '../../shared/models/insta-post';
-import { FirebaseClient, GenericFirebase, InstagramClient, Logger } from './helpers';
+import { InstagramClient, Logger } from './helpers';
 import { GeoFireUtil } from './helpers/geofire.util';
 import { InstagramUtil } from './instagram-util';
+import { ScrapedHashtagDto, ScrapedLocationDto, ScrapedPostDto, ScrapedUserDto } from './models/insta-post';
 
 
 @injectable()
 export class ScraperUtil {
   private readonly logger: Logger = new Logger(this);
+  private readonly PAGES_TO_SCRAPE: number = 1; //5;
 
   constructor(
-    private instagram: InstagramClient,
-    private firebaseClient: FirebaseClient
+    private instagram: InstagramClient
   ) { }
 
   public transformPost(post: InstaResponseItem): InstaPost {
@@ -38,33 +40,45 @@ export class ScraperUtil {
   }
 
   async storePosts(posts: InstaPost[]): Promise<void> {
-    const storedPosts = (await this.firebaseClient.posts.get()) || {};
+    this.logger.log("Storing posts", posts.length);
+
+    const scrapedPostDto = getModelForClass(ScrapedPostDto);
+
     for (const post of posts) {
-      const isInFirebase = Object.keys(storedPosts).includes(post.code);
-      if (isInFirebase) {
-        this.logger.log(`${post.code} already exists`);
-        continue;
-      }
-      await this.firebaseClient.posts.add(post.code, post);
-    }
+      const latitude: number = toNumber(get(post, 'location.latitude') || get(post, 'location.lat'));
+      const longitude: number = toNumber(get(post, 'location.longitude') || get(post, 'location.lng'));
+
+      await scrapedPostDto.findOneAndUpdate({
+        code: post.code
+      }, {
+        code: post.code,
+        images: post.image_versions2.candidates.map(image => ({
+          width: image.width,
+          height: image.height,
+          url: image.url
+        })),
+        caption: post.caption.text,
+        location: [latitude, longitude],
+      }, { upsert: true });
+
+    };
   }
 
-  async getByUser(user: string): Promise<UserFeedResponseItem[]> {
-    this.logger.log(user, 'getByUser');
-    const account = await this.instagram.client.user.searchExact(user);
+  async getByUser(username: string): Promise<UserFeedResponseItem[]> {
+    this.logger.log(username, 'getByUser');
+    const account = await this.instagram.client.user.searchExact(username);
     if (account) {
       const feed = await this.instagram.feed.user(account.pk);
 
-      // Get pages to scrape
-      const pagesToScrape = await this.getPagesToScrape(this.firebaseClient.users, user);
-      await this.firebaseClient.users.add(user, { lastScraped: new Date(), ...account });
+      const scrapedUserDto = getModelForClass(ScrapedUserDto);
+      await scrapedUserDto.findOneAndUpdate({ username }, { username }, { upsert: true });
 
       const posts: UserFeedResponseItem[] = [];
-      for (let i = 0; i < pagesToScrape; i++) {
+      for (let i = 0; i < this.PAGES_TO_SCRAPE; i++) {
         posts.push(...(await feed.items() as UserFeedResponseItem[]));
       }
       const filteredPosts = posts.filter(InstagramUtil.isValidImage);
-      this.logger.log(user, 'Retrieved', filteredPosts.length, 'items');
+      this.logger.log(username, 'Retrieved', filteredPosts.length, 'items');
       return filteredPosts;
     }
 
@@ -75,12 +89,11 @@ export class ScraperUtil {
     this.logger.log(hashtag, 'getByHashtag');
     const feed = await this.instagram.feed.tags(hashtag, 'top');
 
-    // Get pages to scrape
-    const pagesToScrape = await this.getPagesToScrape(this.firebaseClient.tags, hashtag);
-    await this.firebaseClient.tags.add(hashtag, { lastScraped: new Date() });
+    const scrapedHashtagDto = getModelForClass(ScrapedHashtagDto);
+    await scrapedHashtagDto.findOneAndUpdate({ hashtag }, { hashtag }, { upsert: true });
 
     const posts: TagFeedResponseItemsItem[] = [];
-    for (let i = 0; i < pagesToScrape; i++) {
+    for (let i = 0; i < this.PAGES_TO_SCRAPE; i++) {
       posts.push(...(await feed.items() as TagFeedResponseItemsItem[]));
     }
     const filteredPosts = posts.filter(post => InstagramUtil.isValidImage(post) && InstagramUtil.hasHighLikeCount(post));
@@ -93,26 +106,16 @@ export class ScraperUtil {
     locationId = locationId + '';
     const feed = await this.instagram.feed.location(locationId, 'ranked');
 
-    // Get pages to scrape
-    const pagesToScrape = await this.getPagesToScrape(this.firebaseClient.locations, locationId);
-    await this.firebaseClient.locations.add(locationId, { lastScraped: new Date() });
+    const scrapedLocationDto = getModelForClass(ScrapedLocationDto);
+    await scrapedLocationDto.findOneAndUpdate({ locationId }, { locationId }, { upsert: true });
 
     const posts: LocationFeedResponseMedia[] = [];
-    for (let i = 0; i < pagesToScrape; i++) {
+    for (let i = 0; i < this.PAGES_TO_SCRAPE; i++) {
       posts.push(...(await feed.items() as LocationFeedResponseMedia[]));
     }
     const filteredPosts = posts.filter(post => InstagramUtil.isValidImage(post) && InstagramUtil.hasHighLikeCount(post));
     this.logger.log(locationId, 'Retrieved', filteredPosts.length, 'items');
     return filteredPosts;
-  }
-
-  private async getPagesToScrape(firebaseCollection: GenericFirebase<any>, itemToSearch: string | number): Promise<number> {
-    let pagesToScrape = 5;
-    const records = (await firebaseCollection.get()) || {};
-    if (!keys(records).includes(itemToSearch)) {
-      pagesToScrape = 1;
-    }
-    return pagesToScrape;
   }
 
 }

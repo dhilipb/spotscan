@@ -18,12 +18,12 @@ export class Logger {
   }
 
   log(...messages: any[]): any {
-    const timestamp = new Date().toISOString().slice(0, -1);
+    const timestamp = new Date().toISOString().split('T')[1].slice(0, -1);
     console.log(`${timestamp} ${this.app}${this.user}:`, ...messages);
   }
 
   error(...messages: any[]): any {
-    const timestamp = new Date().toISOString().slice(0, -1);
+    const timestamp = new Date().toISOString().split('T')[1].slice(0, -1);
     console.error(`${timestamp} ${this.app}${this.user}: ERROR`, ...messages);
   }
 }

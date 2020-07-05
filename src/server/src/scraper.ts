@@ -1,9 +1,10 @@
-import { keys, shuffle } from 'lodash';
+import { getModelForClass } from '@typegoose/typegoose';
+import { shuffle } from 'lodash';
 import { injectable } from 'tsyringe';
 
 import { InstaPost } from '../../shared/models/insta-post';
 import { Logger, Util } from './helpers';
-import { FirebaseClient } from './helpers/firebase';
+import { ScrapedHashtagDto, ScrapedLocationDto, ScrapedUserDto } from './models/insta-post';
 import { ScraperUtil } from './scraper-util';
 
 @injectable()
@@ -11,8 +12,7 @@ export class Scraper {
   private readonly logger: Logger = new Logger(this);
 
   constructor(
-    private scraperUtil: ScraperUtil,
-    private firebaseClient: FirebaseClient
+    private scraperUtil: ScraperUtil
   ) { }
 
   async scrapeUser(username: string, storeResults: boolean = true): Promise<InstaPost[]> {
@@ -53,9 +53,9 @@ export class Scraper {
   }
 
   async update(): Promise<void> {
-    const users = shuffle(keys(await this.firebaseClient.users.get() || {}));
-    const tags = shuffle(keys(await this.firebaseClient.tags.get() || {}));
-    const locations = shuffle(keys(await this.firebaseClient.locations.get() || {}));
+    const users = shuffle((await getModelForClass(ScrapedUserDto).find()).map(model => model.username));
+    const tags = shuffle((await getModelForClass(ScrapedHashtagDto).find()).map(model => model.hashtag));
+    const locations = shuffle((await getModelForClass(ScrapedLocationDto).find()).map(model => model.locationId));
 
     for (const user of users) {
       this.logger.log("Scraping user", user);

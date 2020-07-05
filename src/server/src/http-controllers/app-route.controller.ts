@@ -18,7 +18,6 @@ export class AppRouteController extends Server {
     private discoverController: DiscoverController
   ) {
     super(true); // process.env.NODE_ENV === 'development'); // setting showLogs to true
-    this.setupControllers();
   }
 
   private setupControllers(): void {
@@ -32,6 +31,7 @@ export class AppRouteController extends Server {
   }
 
   public start(port: number): void {
+    this.setupControllers();
     this.app.listen(port, () => {
       this.logger.log('Server listening on port: ' + port);
     });

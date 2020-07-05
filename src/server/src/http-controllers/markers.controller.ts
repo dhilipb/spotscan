@@ -1,34 +1,44 @@
 import { Controller, Delete, Get } from '@overnightjs/core';
+import { getModelForClass } from '@typegoose/typegoose';
 import { Request, Response } from 'express';
 import { injectable } from 'tsyringe';
 
-import { FirebaseClient } from '../helpers/firebase';
-import { GeoFireUtil } from '../helpers/geofire.util';
 import { Logger } from '../helpers/logger';
+import { ScrapedPostDto } from '../models/insta-post';
 
 @injectable()
 @Controller('api/markers')
 export class MarkersController {
   private readonly logger: Logger = new Logger(this);
-
-  constructor(
-    private firebaseClient: FirebaseClient
-  ) { }
+  private scrapedPostDto = getModelForClass(ScrapedPostDto);
 
   @Get(':latitude/:longitude')
   public async getMarkers(req: Request, res: Response): Promise<Response> {
     const latitude = +req.params.latitude;
     const longitude = +req.params.longitude;
 
-    const point = GeoFireUtil.createLocation(latitude, longitude);
-    return res.json(await this.firebaseClient.posts.geoQuery(point));
+    await this.scrapedPostDto.syncIndexes();
+
+    // const posts = [];
+    const posts = await this.scrapedPostDto.where('location').near({
+      center: {
+        type: 'Point',
+        coordinates: [latitude, longitude]
+      },
+      maxDistance: 50000
+    });
+
+    this.logger.log(posts);
+
+    return res.json(posts);
   }
 
   @Delete(':code')
   public async deleteMarker(req: Request, res: Response): Promise<Response> {
     const code = req.params.code;
     this.logger.log('Deleting', code);
-    await this.firebaseClient.posts.remove(code);
+
+    await this.scrapedPostDto.findOneAndDelete({ code });
     return res.json({});
   }
 

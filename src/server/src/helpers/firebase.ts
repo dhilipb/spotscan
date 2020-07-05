@@ -79,7 +79,7 @@ export class GenericFirebase<T> {
 }
 
 @singleton()
-export class FirebaseClient {
+class FirebaseClient {
   private readonly logger: Logger = new Logger(this);
   public posts: GenericFirebase<InstaPost> = new GenericFirebase('posts');
   public tags: GenericFirebase<any> = new GenericFirebase('tags');
