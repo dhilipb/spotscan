@@ -4,7 +4,7 @@ import { get, has } from 'lodash';
 import { injectable } from 'tsyringe';
 
 import { InstaResponseItem, UserFeedResponseItem } from '../../shared/models/insta-post';
-import { InstagramClient, Logger, Util } from './helpers';
+import { InstagramClient, Logger } from './helpers';
 import { InstagramUtil } from './instagram-util';
 import { ScrapedPostDto } from './models/scraped-post.dto';
 import { ScrapedHashtagDto, ScrapedLocationDto, ScrapedUserDto } from './models/scraped.dto';
@@ -67,7 +67,7 @@ export class ScraperUtil {
       const posts: UserFeedResponseItem[] = [];
       for (let i = 0; i < this.PAGES_TO_SCRAPE; i++) {
         posts.push(...(await feed.items() as UserFeedResponseItem[]));
-        await Util.randomSleep();
+        // await Util.randomSleep();
       }
       const filteredPosts = posts.filter(InstagramUtil.isValidImage);
       this.logger.log(username, 'Retrieved', filteredPosts.length, 'items');
@@ -87,7 +87,7 @@ export class ScraperUtil {
     const posts: TagFeedResponseItemsItem[] = [];
     for (let i = 0; i < this.PAGES_TO_SCRAPE; i++) {
       posts.push(...(await feed.items() as TagFeedResponseItemsItem[]));
-      await Util.randomSleep();
+      // await Util.randomSleep();
     }
     const filteredPosts = posts.filter(post => InstagramUtil.isValidImage(post) && InstagramUtil.hasHighLikeCount(post));
     this.logger.log(hashtag, 'Retrieved', filteredPosts.length, 'items');
@@ -103,9 +103,9 @@ export class ScraperUtil {
     await scrapedLocationDto.findOneAndUpdate({ locationId }, { locationId }, { upsert: true });
 
     const posts: LocationFeedResponseMedia[] = [];
-    for (let i = 0; i < this.PAGES_TO_SCRAPE; i++) {
+    for (let i = 0; i < 2; i++) {
       posts.push(...(await feed.items() as LocationFeedResponseMedia[]));
-      await Util.randomSleep();
+      // await Util.randomSleep();
     }
     const filteredPosts = posts.filter(post => InstagramUtil.isValidImage(post) && InstagramUtil.hasHighLikeCount(post));
     this.logger.log(locationId, 'Retrieved', filteredPosts.length, 'items');

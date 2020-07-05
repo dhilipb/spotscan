@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { GoogleMap, MapInfoWindow, MapMarker } from '@angular/google-maps';
 import { InstaPost } from '@shared/models';
 import { get } from 'lodash';
@@ -12,7 +12,7 @@ import { ApiService } from './services';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
 
   @ViewChild(GoogleMap) googleMap: GoogleMap;
   @ViewChild(MapInfoWindow, { static: false }) infoWindow: MapInfoWindow;
@@ -33,6 +33,9 @@ export class AppComponent {
   constructor(
     private apiService: ApiService
   ) {
+  }
+
+  ngOnInit() {
     this.mapCenter$.pipe(debounceTime(500)).subscribe((center: google.maps.LatLng) => {
       this.retrievePosts(center);
     });
@@ -43,6 +46,12 @@ export class AppComponent {
     if (this.googleMap) {
       const center = this.googleMap.getCenter();
       this.mapCenter$.next(center);
+
+      // const heatmap = new google.maps.visualization.HeatmapLayer({
+      //   data: this.posts.map(post => new google.maps.LatLng(post.location[0], post.location[1]))
+      // });
+
+      // heatmap.setMap(this.googleMap._googleMap);
     }
   }
 
@@ -80,7 +89,7 @@ export class AppComponent {
     this.loading = true;
     this.apiService.discoverSpot(latitude, longitude).subscribe(posts => {
       this.loading = false;
-      this.updatePosts(posts);
+      this.updatePosts(posts, 'https://i.imgur.com/fn3w5G8.png');
     });
   }
 
@@ -98,7 +107,7 @@ export class AppComponent {
     }
   }
 
-  private updatePosts(posts: InstaPost[]) {
+  private updatePosts(posts: InstaPost[], iconUrl?: string) {
     posts.forEach(post => {
       const alreadyExists = this.posts.find(postInLoop => postInLoop.code === post.code);
       if (!alreadyExists) {
@@ -109,8 +118,13 @@ export class AppComponent {
             lat: get(post, 'location[0]'),
             lng: get(post, 'location[1]')
           },
+          icon: {
+            url: iconUrl || 'https://i.imgur.com/bsT8OCA.png',
+            scaledSize: new google.maps.Size(35, 35)
+          } as google.maps.Icon,
           draggable: false
         } as google.maps.MarkerOptions;
+
         this.posts.push(post);
       }
     });

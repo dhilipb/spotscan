@@ -40,6 +40,7 @@ export class DiscoverController {
 
     const locationsSearch = await this.instagram.client.search.location(latitude, longitude);
     const topLocations = take(locationsSearch, 5);
+
     const posts = [];
     for (const location of topLocations) {
       const simplifiedPosts = await this.scraper.scrapeLocation(location?.external_id);
