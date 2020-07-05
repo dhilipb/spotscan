@@ -4,7 +4,7 @@ import { injectable } from 'tsyringe';
 
 import { InstaPost } from '../../shared/models/insta-post';
 import { Logger, Util } from './helpers';
-import { ScrapedHashtagDto, ScrapedLocationDto, ScrapedUserDto } from './models/insta-post';
+import { ScrapedHashtagDto, ScrapedLocationDto, ScrapedUserDto } from './models/scraped.dto';
 import { ScraperUtil } from './scraper-util';
 
 @injectable()

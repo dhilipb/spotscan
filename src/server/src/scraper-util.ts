@@ -7,7 +7,8 @@ import { InstaPost, InstaResponseItem, UserFeedResponseItem } from '../../shared
 import { InstagramClient, Logger } from './helpers';
 import { GeoFireUtil } from './helpers/geofire.util';
 import { InstagramUtil } from './instagram-util';
-import { ScrapedHashtagDto, ScrapedLocationDto, ScrapedPostDto, ScrapedUserDto } from './models/insta-post';
+import { ScrapedPostDto } from './models/scraped-post.dto';
+import { ScrapedHashtagDto, ScrapedLocationDto, ScrapedUserDto } from './models/scraped.dto';
 
 
 @injectable()
@@ -52,11 +53,7 @@ export class ScraperUtil {
         code: post.code
       }, {
         code: post.code,
-        images: post.image_versions2.candidates.map(image => ({
-          width: image.width,
-          height: image.height,
-          url: image.url
-        })),
+        images: post.image_versions2.candidates.map(image => image.url),
         username: get(post, 'user.username') || get(post, 'user.name'),
         like_count: post.like_count,
         caption: post.caption.text,
