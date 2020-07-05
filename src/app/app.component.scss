@@ -19,9 +19,9 @@
     }
 
     .status {
-      float: right;
-      margin-top: 10px;
-      font-size: 12px
+      position: absolute;
+      top: 15px;
+      right: 10px;
     }
 
     .title {
