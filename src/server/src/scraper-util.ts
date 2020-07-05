@@ -62,7 +62,7 @@ export class ScraperUtil {
       const feed = await this.instagram.feed.user(account.pk);
 
       const scrapedUserDto = getModelForClass(ScrapedUserDto);
-      await scrapedUserDto.findOneAndUpdate({ username }, { username }, { upsert: true });
+      await scrapedUserDto.findOneAndUpdate({ username }, { username, lastScraped: new Date() }, { upsert: true });
 
       const posts: UserFeedResponseItem[] = [];
       for (let i = 0; i < this.PAGES_TO_SCRAPE; i++) {
@@ -82,7 +82,7 @@ export class ScraperUtil {
     const feed = await this.instagram.feed.tags(hashtag, 'top');
 
     const scrapedHashtagDto = getModelForClass(ScrapedHashtagDto);
-    await scrapedHashtagDto.findOneAndUpdate({ hashtag }, { hashtag }, { upsert: true });
+    await scrapedHashtagDto.findOneAndUpdate({ hashtag }, { hashtag, lastScraped: new Date() }, { upsert: true });
 
     const posts: TagFeedResponseItemsItem[] = [];
     for (let i = 0; i < this.PAGES_TO_SCRAPE; i++) {
@@ -100,7 +100,7 @@ export class ScraperUtil {
     const feed = await this.instagram.feed.location(locationId, 'ranked');
 
     const scrapedLocationDto = getModelForClass(ScrapedLocationDto);
-    await scrapedLocationDto.findOneAndUpdate({ locationId }, { locationId }, { upsert: true });
+    await scrapedLocationDto.findOneAndUpdate({ locationId }, { locationId, lastScraped: new Date() }, { upsert: true });
 
     const posts: LocationFeedResponseMedia[] = [];
     for (let i = 0; i < 2; i++) {
