@@ -4,7 +4,7 @@ import { injectable } from 'tsyringe';
 
 import { Logger, Util } from './helpers';
 import { ScrapedPostDto } from './models/scraped-post.dto';
-import { ScrapedHashtagDto, ScrapedLocationDto, ScrapedUserDto } from './models/scraped.dto';
+import { ScrapedUserDto } from './models/scraped.dto';
 import { ScraperUtil } from './scraper-util';
 
 @injectable()
@@ -27,6 +27,7 @@ export class Scraper {
     }
     return simplifiedPosts;
   }
+
   async scrapeTag(tag: string, storeResults: boolean = true): Promise<ScrapedPostDto[]> {
     if (!tag) {
       return [];
@@ -39,6 +40,7 @@ export class Scraper {
     }
     return simplifiedPosts;
   }
+
   async scrapeLocation(locationId: string, storeResults: boolean = false): Promise<ScrapedPostDto[]> {
     if (!locationId) {
       return [];
@@ -53,24 +55,26 @@ export class Scraper {
   }
 
   async update(): Promise<void> {
-    const users = shuffle((await getModelForClass(ScrapedUserDto).find()).map(model => model.username));
-    const tags = shuffle((await getModelForClass(ScrapedHashtagDto).find()).map(model => model.hashtag));
-    const locations = shuffle((await getModelForClass(ScrapedLocationDto).find()).map(model => model.locationId));
-
-    for (const user of users) {
+    const users = await getModelForClass(ScrapedUserDto).find({ lastScraped: -1 }).exec();
+    const userNames = shuffle(users.map(model => model.username));
+    for (const user of userNames) {
       this.logger.log("Scraping user", user);
       await this.scrapeUser(user);
+      await Util.randomSleep(5000, 2 * 60 * 1000); // 5s to 2mins
     }
-    await Util.randomSleep();
-    for (const tag of tags) {
-      this.logger.log("Scraping tag", tag);
-      await this.scrapeTag(tag);
-    }
-    await Util.randomSleep();
-    for (const location of locations) {
-      this.logger.log("Scraping location", location);
-      await this.scrapeLocation(location);
-    }
+
+    // await Util.randomSleep();
+    // const tags = shuffle((await getModelForClass(ScrapedHashtagDto).find()).map(model => model.hashtag));
+    // for (const tag of tags) {
+    //   this.logger.log("Scraping tag", tag);
+    //   await this.scrapeTag(tag);
+    // }
+    // await Util.randomSleep();
+    // const locations = shuffle((await getModelForClass(ScrapedLocationDto).find()).map(model => model.locationId));
+    // for (const location of locations) {
+    //   this.logger.log("Scraping location", location);
+    //   await this.scrapeLocation(location);
+    // }
   }
 
 }

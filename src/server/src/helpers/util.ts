@@ -16,7 +16,9 @@ export class Util {
   }
 
   public static async randomSleep(min: number = 500, max: number = 2000): Promise<void> {
-    await new Promise(r => setTimeout(r, Util.randomBetween(min, max)));
+    const randomTime = Util.randomBetween(min, max);
+    console.log('Sleeping for', randomTime);
+    await new Promise(r => setTimeout(r, randomTime));
   }
 
 }

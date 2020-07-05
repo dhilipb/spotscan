@@ -19,7 +19,7 @@ export class AppComponent implements OnInit {
 
   private mapCenter$: Subject<google.maps.LatLng> = new Subject();
 
-  public loading: boolean = false;
+  public loading: number = 0;
 
   // Markers
   posts: InstaPost[] = [];
@@ -37,9 +37,9 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.mapCenter$.pipe(debounceTime(500)).subscribe((center: google.maps.LatLng) => {
-      this.retrievePosts(center);
+      this.retrieveMarkers(center);
     });
-    this.retrievePosts(new google.maps.LatLng(this.defaultOptions.center.lat, this.defaultOptions.center.lng));
+    this.retrieveMarkers(new google.maps.LatLng(this.defaultOptions.center.lat, this.defaultOptions.center.lng));
   }
 
   mapChange() {
@@ -57,14 +57,6 @@ export class AppComponent implements OnInit {
     this.infoWindow.open(markerAnchor);
   }
 
-  private retrievePosts(center: google.maps.LatLng) {
-    this.loading = true;
-    this.apiService.getMarkers(center.lat(), center.lng()).subscribe(posts => {
-      this.loading = false;
-      this.updatePosts(posts);
-    });
-  }
-
   closeInfoWindow() {
     this.infoWindow.close();
   }
@@ -79,28 +71,11 @@ export class AppComponent implements OnInit {
   }
 
   discover(event) {
-    const latitude = event.latLng.lat();
-    const longitude = event.latLng.lng();
-    console.log(event);
-    this.loading = true;
-    this.apiService.discoverSpot(latitude, longitude).subscribe(posts => {
-      this.loading = false;
+    this.loading++;
+    this.apiService.discoverSpot(event.latLng.lat(), event.latLng.lng()).subscribe(posts => {
+      this.loading--;
       this.updatePosts(posts, 'https://i.imgur.com/fn3w5G8.png');
     });
-  }
-
-  scrape(event) {
-    if (event.keyCode === 13) {
-      const text: string = event.target.value;
-      if (text.startsWith('#')) {
-        this.apiService.discoverHashtag(text.substr(1)).subscribe();
-      } else if (text.startsWith('@')) {
-        this.apiService.discoverUser(text.substr(1)).subscribe();
-      } else {
-        this.apiService.discoverUser(text).subscribe();
-      }
-      event.target.value = '';
-    }
   }
 
   private updatePosts(posts: InstaPost[], iconUrl?: string) {
@@ -120,6 +95,14 @@ export class AppComponent implements OnInit {
 
         this.posts.push(post);
       }
+    });
+  }
+
+  private retrieveMarkers(center: google.maps.LatLng) {
+    this.loading++;
+    this.apiService.getMarkers(center.lat(), center.lng()).subscribe(posts => {
+      this.loading--;
+      this.updatePosts(posts);
     });
   }
 

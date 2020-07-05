@@ -1,4 +1,4 @@
-import { index, modelOptions, prop } from '@typegoose/typegoose';
+import { modelOptions, prop } from '@typegoose/typegoose';
 
 @modelOptions({ options: { customName: 'User' } })
 export class ScrapedUserDto {
@@ -6,7 +6,7 @@ export class ScrapedUserDto {
   username: string;
 
   @prop()
-  lastScraped: Date;
+  lastScraped: Date | number;
 }
 
 @modelOptions({ options: { customName: 'Hashtag' } })

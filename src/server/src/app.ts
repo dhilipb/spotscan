@@ -30,6 +30,7 @@ class InstaMapsApp {
   private async setupInstagram(): Promise<void> {
     if (userCredentials.username && userCredentials.password) {
       await this.instagram.login(userCredentials.username, userCredentials.password);
+      await this.scraper.update();
     }
   }
 }

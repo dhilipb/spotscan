@@ -4,8 +4,7 @@
     <div class="status" *ngIf="loading">
       <div class="loader"></div>
     </div>
-    <!-- <input type="text" (keyup)="scrape($event)" placeholder="Scrape for" /> -->
-    <div class="title" [class.loading]="loading">Scene Spot</div>
+    <div class="title">Scene Spot</div>
   </div>
 
   <google-map width="100%" height="100%" [center]="defaultOptions.center" [zoom]="defaultOptions.zoom" (centerChanged)="mapChange()" (mapClick)="closeInfoWindow()" (mapRightclick)="discover($event)">
