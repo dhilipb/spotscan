@@ -3,9 +3,8 @@ import { LocationFeedResponseMedia, TagFeedResponseItemsItem } from 'instagram-p
 import { get, has } from 'lodash';
 import { injectable } from 'tsyringe';
 
-import { InstaPost, InstaResponseItem, UserFeedResponseItem } from '../../shared/models/insta-post';
+import { InstaResponseItem, UserFeedResponseItem } from '../../shared/models/insta-post';
 import { InstagramClient, Logger } from './helpers';
-import { GeoFireUtil } from './helpers/geofire.util';
 import { InstagramUtil } from './instagram-util';
 import { ScrapedPostDto } from './models/scraped-post.dto';
 import { ScrapedHashtagDto, ScrapedLocationDto, ScrapedUserDto } from './models/scraped.dto';
@@ -14,13 +13,13 @@ import { ScrapedHashtagDto, ScrapedLocationDto, ScrapedUserDto } from './models/
 @injectable()
 export class ScraperUtil {
   private readonly logger: Logger = new Logger(this);
-  private readonly PAGES_TO_SCRAPE: number = 1; //5;
+  private readonly PAGES_TO_SCRAPE: number = 5;
 
   constructor(
     private instagram: InstagramClient
   ) { }
 
-  public transformPost(post: InstaResponseItem): InstaPost {
+  public transformPost(post: InstaResponseItem): ScrapedPostDto {
     if (!has(post, 'location')) {
       return null;
     }
@@ -28,39 +27,33 @@ export class ScraperUtil {
       return null;
     }
 
-    const instaPost = post as InstaPost;
-    const lat = get(post, 'location.latitude') || get(post, 'location.lat');
-    const lng = get(post, 'location.longitude') || get(post, 'location.lng');
-    if (!lat || !lng) {
+    const latitude: number = Number(get(post, 'location.latitude') || get(post, 'location.lat'));
+    const longitude: number = Number(get(post, 'location.longitude') || get(post, 'location.lng'));
+    if (!latitude || !longitude) {
       return null;
     }
 
-    instaPost.location.geopoint = GeoFireUtil.createLocation(+lat, +lng);
+    const scrapedPostDto = {
+      code: post.code,
+      images: post.image_versions2.candidates.map(image => image.url),
+      username: get(post, 'user.username') || get(post, 'user.name'),
+      like_count: post.like_count,
+      caption: post.caption?.text || '',
+      taken_at: post.taken_at,
+      location: [latitude, longitude],
+    } as ScrapedPostDto;
 
-    return instaPost;
+    return scrapedPostDto;
   }
 
-  async storePosts(posts: InstaPost[]): Promise<void> {
+  async storePosts(posts: ScrapedPostDto[]): Promise<void> {
     this.logger.log("Storing posts", posts.length);
 
     const scrapedPostDto = getModelForClass(ScrapedPostDto);
 
     for (const post of posts) {
-      const latitude: number = Number(get(post, 'location.latitude') || get(post, 'location.lat'));
-      const longitude: number = Number(get(post, 'location.longitude') || get(post, 'location.lng'));
 
-      await scrapedPostDto.findOneAndUpdate({
-        code: post.code
-      }, {
-        code: post.code,
-        images: post.image_versions2.candidates.map(image => image.url),
-        username: get(post, 'user.username') || get(post, 'user.name'),
-        like_count: post.like_count,
-        caption: post.caption.text,
-        taken_at: post.taken_at,
-        location: [latitude, longitude],
-      }, { upsert: true });
-
+      await scrapedPostDto.findOneAndUpdate({ code: post.code }, post, { upsert: true });
     };
   }
 

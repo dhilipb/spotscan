@@ -24,5 +24,11 @@ export class ApiService {
   public discoverSpot(latitude: number, longitude: number): Observable<any> {
     return this.httpClient.get(`/api/discover/location/${latitude}/${longitude}`);
   }
+  public discoverUser(username: string): Observable<any> {
+    return this.httpClient.get(`/api/discover/user/${username}`);
+  }
+  public discoverHashtag(tag: string): Observable<any> {
+    return this.httpClient.get(`/api/discover/hashtag/${tag}`);
+  }
 
 }

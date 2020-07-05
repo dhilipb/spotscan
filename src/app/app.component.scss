@@ -1,1 +1,23 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 
+  .header {
+    width: 100%;
+    padding: 5px;
+    background-color: #fafafa;
+    text-align: right;
+    display: flex;
+    justify-content: space-around;
+
+    input {
+      padding: 5px;
+      font-size: 12px;
+    }
+  }
+
+  google-map {
+    flex: 1 1 auto;
+  }
+}

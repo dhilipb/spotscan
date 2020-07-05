@@ -11,6 +11,8 @@ export class PostInfoWindowComponent implements OnInit {
 
   @Input() post: InstaPost;
 
+  showCaption: boolean = false;
+
   constructor() { }
 
   ngOnInit() {

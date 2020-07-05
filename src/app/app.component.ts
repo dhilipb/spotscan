@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 import { GoogleMap, MapInfoWindow, MapMarker } from '@angular/google-maps';
 import { InstaPost } from '@shared/models';
-import { get, last } from 'lodash';
+import { get } from 'lodash';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
@@ -19,13 +19,15 @@ export class AppComponent {
 
   private mapCenter$: Subject<google.maps.LatLng> = new Subject();
 
+  public loading: boolean = false;
+
   // Markers
   posts: InstaPost[] = [];
   selectedPost: InstaPost;
 
   public defaultOptions = {
-    center: { lat: 51.41453970160687, lng: -0.6819629031785168 },
-    zoom: 10,
+    center: { lat: 51.50178854430209, lng: -0.1287789730673694 },
+    zoom: 14,
   };
 
   constructor(
@@ -51,7 +53,9 @@ export class AppComponent {
   }
 
   private retrievePosts(center: google.maps.LatLng) {
+    this.loading = true;
     this.apiService.getMarkers(center.lat(), center.lng()).subscribe(posts => {
+      this.loading = false;
       this.updatePosts(posts);
     });
   }
@@ -73,20 +77,31 @@ export class AppComponent {
     const latitude = event.latLng.lat();
     const longitude = event.latLng.lng();
     console.log(event);
+    this.loading = true;
     this.apiService.discoverSpot(latitude, longitude).subscribe(posts => {
+      this.loading = false;
       this.updatePosts(posts);
     });
+  }
+
+  scrape(event) {
+    if (event.keyCode === 13) {
+      const text: string = event.target.value;
+      if (text.startsWith('#')) {
+        this.apiService.discoverHashtag(text.substr(1)).subscribe();
+      } else if (text.startsWith('@')) {
+        this.apiService.discoverUser(text.substr(1)).subscribe();
+      } else {
+        this.apiService.discoverUser(text).subscribe();
+      }
+      event.target.value = '';
+    }
   }
 
   private updatePosts(posts: InstaPost[]) {
     posts.forEach(post => {
       const alreadyExists = this.posts.find(postInLoop => postInLoop.code === post.code);
       if (!alreadyExists) {
-
-        // Icon
-        const images = post?.images || [];
-        const lastImage = last(images);
-        const icon = lastImage?.url || '';
 
         // Marker options
         post.markerOptions = {

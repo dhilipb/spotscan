@@ -2,8 +2,8 @@ import { getModelForClass } from '@typegoose/typegoose';
 import { shuffle } from 'lodash';
 import { injectable } from 'tsyringe';
 
-import { InstaPost } from '../../shared/models/insta-post';
 import { Logger, Util } from './helpers';
+import { ScrapedPostDto } from './models/scraped-post.dto';
 import { ScrapedHashtagDto, ScrapedLocationDto, ScrapedUserDto } from './models/scraped.dto';
 import { ScraperUtil } from './scraper-util';
 
@@ -15,37 +15,37 @@ export class Scraper {
     private scraperUtil: ScraperUtil
   ) { }
 
-  async scrapeUser(username: string, storeResults: boolean = true): Promise<InstaPost[]> {
+  async scrapeUser(username: string, storeResults: boolean = true): Promise<ScrapedPostDto[]> {
     if (!username) {
       return [];
     }
 
     const posts = await this.scraperUtil.getByUser(username);
-    const simplifiedPosts: InstaPost[] = posts.map(this.scraperUtil.transformPost).filter(post => post);
+    const simplifiedPosts: ScrapedPostDto[] = posts.map(this.scraperUtil.transformPost).filter(post => post);
     if (storeResults) {
       await this.scraperUtil.storePosts(simplifiedPosts);
     }
     return simplifiedPosts;
   }
-  async scrapeTag(tag: string, storeResults: boolean = true): Promise<InstaPost[]> {
+  async scrapeTag(tag: string, storeResults: boolean = true): Promise<ScrapedPostDto[]> {
     if (!tag) {
       return [];
     }
 
     const posts = await this.scraperUtil.getByHashtag(tag);
-    const simplifiedPosts: InstaPost[] = posts.map(this.scraperUtil.transformPost).filter(post => post);
+    const simplifiedPosts: ScrapedPostDto[] = posts.map(this.scraperUtil.transformPost).filter(post => post);
     if (storeResults) {
       await this.scraperUtil.storePosts(simplifiedPosts);
     }
     return simplifiedPosts;
   }
-  async scrapeLocation(locationId: string, storeResults: boolean = false): Promise<InstaPost[]> {
+  async scrapeLocation(locationId: string, storeResults: boolean = false): Promise<ScrapedPostDto[]> {
     if (!locationId) {
       return [];
     }
 
     const posts = await this.scraperUtil.getByLocation(locationId);
-    const simplifiedPosts: InstaPost[] = posts.map(this.scraperUtil.transformPost).filter(post => post);
+    const simplifiedPosts: ScrapedPostDto[] = posts.map(this.scraperUtil.transformPost).filter(post => post);
     if (storeResults) {
       await this.scraperUtil.storePosts(simplifiedPosts);
     }
