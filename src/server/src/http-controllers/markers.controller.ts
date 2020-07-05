@@ -28,8 +28,6 @@ export class MarkersController {
       maxDistance: 50000
     });
 
-    this.logger.log(posts);
-
     return res.json(posts);
   }
 

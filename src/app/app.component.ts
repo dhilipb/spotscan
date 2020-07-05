@@ -84,15 +84,15 @@ export class AppComponent {
       if (!alreadyExists) {
 
         // Icon
-        const images = post?.image_versions2?.candidates || [];
+        const images = post?.images || [];
         const lastImage = last(images);
         const icon = lastImage?.url || '';
 
         // Marker options
         post.markerOptions = {
           position: {
-            lat: get(post, 'location.lat'),
-            lng: get(post, 'location.lng')
+            lat: get(post, 'location[0]'),
+            lng: get(post, 'location[1]')
           },
           draggable: false
         } as google.maps.MarkerOptions;

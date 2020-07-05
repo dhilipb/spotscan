@@ -1,6 +1,6 @@
 import { getModelForClass } from '@typegoose/typegoose';
 import { LocationFeedResponseMedia, TagFeedResponseItemsItem } from 'instagram-private-api';
-import { get, has, toNumber } from 'lodash';
+import { get, has } from 'lodash';
 import { injectable } from 'tsyringe';
 
 import { InstaPost, InstaResponseItem, UserFeedResponseItem } from '../../shared/models/insta-post';
@@ -45,8 +45,8 @@ export class ScraperUtil {
     const scrapedPostDto = getModelForClass(ScrapedPostDto);
 
     for (const post of posts) {
-      const latitude: number = toNumber(get(post, 'location.latitude') || get(post, 'location.lat'));
-      const longitude: number = toNumber(get(post, 'location.longitude') || get(post, 'location.lng'));
+      const latitude: number = Number(get(post, 'location.latitude') || get(post, 'location.lat'));
+      const longitude: number = Number(get(post, 'location.longitude') || get(post, 'location.lng'));
 
       await scrapedPostDto.findOneAndUpdate({
         code: post.code
@@ -57,7 +57,10 @@ export class ScraperUtil {
           height: image.height,
           url: image.url
         })),
+        username: get(post, 'user.username') || get(post, 'user.name'),
+        like_count: post.like_count,
         caption: post.caption.text,
+        taken_at: post.taken_at,
         location: [latitude, longitude],
       }, { upsert: true });
 

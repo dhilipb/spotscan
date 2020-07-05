@@ -1,11 +1,11 @@
-<div class="map-info-window-container">
+<div class="map-info-window-container" *ngIf="post">
   <a [href]="'https://instagram.com/p/' + post?.code" target="_blank">
-    <img src="{{ (post?.image_versions2?.candidates)[0].url }}" class="insta-image" />
+    <img [src]="(post?.images)[0].url" class="insta-image" />
   </a>
-  <div class="author">
+  <div class="author" *ngIf="post?.user?.username">
     by
-    <a [href]="'https://instagram.com/' + (post?.user?.name || post?.user.username)" target="_blank">@{{ post?.user?.name || post?.user.username }}</a>
+    <a [href]="'https://instagram.com/' + post.user.username" target="_blank">@{{ post.user.username }}</a>
     | {{ post?.taken_at * 1000 | dateAgo }} | ❤️{{ post?.like_count }}
   </div>
-  <div class="caption">{{ post?.caption?.text || post?.caption }}</div>
+  <div class="caption" *ngIf="post?.caption">{{ post.caption }}</div>
 </div>

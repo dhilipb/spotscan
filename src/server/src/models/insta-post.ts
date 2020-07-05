@@ -1,34 +1,20 @@
 import { index, modelOptions, prop } from '@typegoose/typegoose';
 
-import { ImageCandidate } from '../../../shared/models/insta-post';
-
-export class GeoPointDto {
-  @prop({ default: 'Point' })
-  type: string = 'Point';
-
-  @prop()
-  coordinates: number[];
-}
-
-
-@index({ username: 1 }, { unique: true })
 @modelOptions({ options: { customName: 'User' } })
 export class ScrapedUserDto {
-  @prop()
+  @prop({ index: true, unique: true })
   username: string;
 }
 
-@index({ hashtag: 1 }, { unique: true })
 @modelOptions({ options: { customName: 'Hashtag' } })
 export class ScrapedHashtagDto {
-  @prop()
+  @prop({ index: true, unique: true })
   hashtag: string;
 }
 
-@index({ locationId: 1 }, { unique: true })
 @modelOptions({ options: { customName: 'Location' } })
 export class ScrapedLocationDto {
-  @prop()
+  @prop({ index: true, unique: true })
   locationId: string;
 }
 
@@ -40,11 +26,20 @@ export class ScrapedPostDto {
   code: string;
 
   @prop()
-  images?: ImageCandidate[];
+  images: any;
 
   @prop({ type: Number })
   location: [number, number];
 
   @prop()
-  caption?: string;
+  caption: string;
+
+  @prop()
+  username: string;
+
+  @prop()
+  like_count: number;
+
+  @prop()
+  taken_at: number;
 }

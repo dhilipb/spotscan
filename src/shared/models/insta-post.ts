@@ -1,5 +1,7 @@
+// tslint:disable:variable-name
 import * as firebase from 'firebase-admin';
 import { LocationFeedResponseLocation, LocationFeedResponseMedia, TagFeedResponseItemsItem, UserFeedResponseItemsItem } from 'instagram-private-api';
+
 
 import GeoPoint = firebase.firestore.GeoPoint;
 
@@ -8,7 +10,7 @@ export interface UserFeedResponseItem extends UserFeedResponseItemsItem {
   location?: LocationFeedResponseLocation;
 }
 
-export interface ImageCandidate {
+export class ImageCandidate {
   width?: number;
   height?: number;
   url?: string;
@@ -16,11 +18,11 @@ export interface ImageCandidate {
   estimated_scans_sizes?: number[];
 }
 
-export interface ImageVersions {
+export class ImageVersions {
   candidates?: ImageCandidate[];
 }
 
-export interface Location {
+export class Location {
   pk?: number;
   name?: string;
   address?: string;
@@ -32,7 +34,7 @@ export interface Location {
   facebook_places_id?: number;
 }
 
-export interface InstaUser {
+export class InstaUser {
   pk?: number;
   username?: string;
   full_name?: string;
@@ -46,7 +48,7 @@ export interface InstaUser {
   latest_reel_media?: number;
 }
 
-export interface PreviewComment {
+export class PreviewComment {
   pk?: string;
   user_id?: number;
   text?: string;
@@ -64,7 +66,7 @@ export interface PreviewComment {
   comment_like_count?: number;
 }
 
-export interface Caption {
+export class Caption {
   pk?: string;
   user_id?: number;
   text?: string;
@@ -80,7 +82,7 @@ export interface Caption {
   media_id?: string;
 }
 
-export interface InstaPost {
+export class InstaPost {
   taken_at?: number;
   pk?: string;
   id?: string;
@@ -117,7 +119,7 @@ export interface InstaPost {
   [key: string]: any;
 }
 
-export interface SimpleLocation {
+export class SimpleLocation {
   geopoint?: GeoPoint;
   [location: string]: any;
 }
