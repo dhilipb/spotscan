@@ -26,7 +26,7 @@ export class MarkersController {
         coordinates: [latitude, longitude]
       },
       maxDistance: 500000
-    });
+    }); //.where('username', 'londonunmasked');
 
     return res.json(posts);
   }
@@ -34,9 +34,10 @@ export class MarkersController {
   @Delete(':code')
   public async deleteMarker(req: Request, res: Response): Promise<Response> {
     const code = req.params.code;
-    this.logger.log('Deleting', code);
-
-    await this.scrapedPostDto.findOneAndDelete({ code });
+    if (req.headers.referer.includes('http://localhost:4200')) {
+      this.logger.log('Deleting', code);
+      await this.scrapedPostDto.findOneAndDelete({ code });
+    }
     return res.json({});
   }
 

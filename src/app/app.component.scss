@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Advent+Pro:wght@700&display=swap');
+
 .container {
   display: flex;
   flex-direction: column;
@@ -7,17 +9,55 @@
     width: 100%;
     padding: 5px;
     background-color: #fafafa;
-    text-align: right;
-    display: flex;
-    justify-content: space-around;
+    position: relative;
+    box-sizing: border-box;
+    text-align: center;
 
     input {
       padding: 5px;
       font-size: 12px;
     }
+
+    .status {
+      float: right;
+      margin-top: 10px;
+      font-size: 12px
+    }
+
+    .title {
+      font-family: 'Advent Pro', sans-serif;
+      padding: 10px;
+      text-transform: uppercase;
+      font-size: 22px;
+    }
   }
 
   google-map {
     flex: 1 1 auto;
+  }
+
+}
+
+
+.loader {
+  $thickness: 5px;
+
+  border: $thickness solid #f3f3f3;
+  /* Light grey */
+  border-top: $thickness solid #3498db;
+  /* Blue */
+  border-radius: 50%;
+  width: 15px;
+  height: 15px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
   }
 }

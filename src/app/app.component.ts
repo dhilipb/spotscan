@@ -45,19 +45,15 @@ export class AppComponent implements OnInit {
   mapChange() {
     if (this.googleMap) {
       const center = this.googleMap.getCenter();
-      this.mapCenter$.next(center);
-
-      // const heatmap = new google.maps.visualization.HeatmapLayer({
-      //   data: this.posts.map(post => new google.maps.LatLng(post.location[0], post.location[1]))
-      // });
-
-      // heatmap.setMap(this.googleMap._googleMap);
+      const zoom = this.googleMap.getZoom();
+      if (zoom > 7) {
+        this.mapCenter$.next(center);
+      }
     }
   }
 
   openInfoWindow(markerAnchor: MapMarker, post: InstaPost) {
     this.selectedPost = post;
-    console.log(this.selectedPost);
     this.infoWindow.open(markerAnchor);
   }
 
@@ -114,13 +110,10 @@ export class AppComponent implements OnInit {
 
         // Marker options
         post.markerOptions = {
-          position: {
-            lat: get(post, 'location[0]'),
-            lng: get(post, 'location[1]')
-          },
+          position: new google.maps.LatLng(get(post, 'location[0]'), get(post, 'location[1]')),
           icon: {
-            url: iconUrl || 'https://i.imgur.com/bsT8OCA.png',
-            scaledSize: new google.maps.Size(35, 35)
+            url: post.username === 'londonunmasked' ? 'https://i.imgur.com/yHw9r5X.png' : (iconUrl || 'https://i.imgur.com/bsT8OCA.png'),
+            scaledSize: new google.maps.Size(32, 32)
           } as google.maps.Icon,
           draggable: false
         } as google.maps.MarkerOptions;
