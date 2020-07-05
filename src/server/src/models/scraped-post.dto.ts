@@ -7,7 +7,7 @@ export class ScrapedPostDto {
   @prop({ index: true, unique: true })
   code: string;
 
-  @prop({ items: String })
+  @prop()
   images: string[];
 
   @prop({ type: Number })

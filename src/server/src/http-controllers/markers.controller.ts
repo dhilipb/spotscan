@@ -25,7 +25,7 @@ export class MarkersController {
         type: 'Point',
         coordinates: [latitude, longitude]
       },
-      maxDistance: 50000
+      maxDistance: 500000
     });
 
     return res.json(posts);

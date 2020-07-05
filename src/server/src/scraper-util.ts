@@ -4,16 +4,15 @@ import { get, has } from 'lodash';
 import { injectable } from 'tsyringe';
 
 import { InstaResponseItem, UserFeedResponseItem } from '../../shared/models/insta-post';
-import { InstagramClient, Logger } from './helpers';
+import { InstagramClient, Logger, Util } from './helpers';
 import { InstagramUtil } from './instagram-util';
 import { ScrapedPostDto } from './models/scraped-post.dto';
 import { ScrapedHashtagDto, ScrapedLocationDto, ScrapedUserDto } from './models/scraped.dto';
 
-
 @injectable()
 export class ScraperUtil {
   private readonly logger: Logger = new Logger(this);
-  private readonly PAGES_TO_SCRAPE: number = 5;
+  private readonly PAGES_TO_SCRAPE: number = 10;
 
   constructor(
     private instagram: InstagramClient
@@ -27,8 +26,8 @@ export class ScraperUtil {
       return null;
     }
 
-    const latitude: number = Number(get(post, 'location.latitude') || get(post, 'location.lat'));
-    const longitude: number = Number(get(post, 'location.longitude') || get(post, 'location.lng'));
+    const latitude: number = parseFloat(get(post, 'location.latitude') || get(post, 'location.lat'));
+    const longitude: number = parseFloat(get(post, 'location.longitude') || get(post, 'location.lng'));
     if (!latitude || !longitude) {
       return null;
     }
@@ -52,8 +51,7 @@ export class ScraperUtil {
     const scrapedPostDto = getModelForClass(ScrapedPostDto);
 
     for (const post of posts) {
-
-      await scrapedPostDto.findOneAndUpdate({ code: post.code }, post, { upsert: true });
+      await scrapedPostDto.findOneAndUpdate({ code: post.code }, post, { upsert: true }).catch(error => this.logger.log('Could not store', post.code, error.codeName));
     };
   }
 
@@ -69,6 +67,7 @@ export class ScraperUtil {
       const posts: UserFeedResponseItem[] = [];
       for (let i = 0; i < this.PAGES_TO_SCRAPE; i++) {
         posts.push(...(await feed.items() as UserFeedResponseItem[]));
+        await Util.randomSleep();
       }
       const filteredPosts = posts.filter(InstagramUtil.isValidImage);
       this.logger.log(username, 'Retrieved', filteredPosts.length, 'items');
@@ -88,6 +87,7 @@ export class ScraperUtil {
     const posts: TagFeedResponseItemsItem[] = [];
     for (let i = 0; i < this.PAGES_TO_SCRAPE; i++) {
       posts.push(...(await feed.items() as TagFeedResponseItemsItem[]));
+      await Util.randomSleep();
     }
     const filteredPosts = posts.filter(post => InstagramUtil.isValidImage(post) && InstagramUtil.hasHighLikeCount(post));
     this.logger.log(hashtag, 'Retrieved', filteredPosts.length, 'items');
@@ -105,6 +105,7 @@ export class ScraperUtil {
     const posts: LocationFeedResponseMedia[] = [];
     for (let i = 0; i < this.PAGES_TO_SCRAPE; i++) {
       posts.push(...(await feed.items() as LocationFeedResponseMedia[]));
+      await Util.randomSleep();
     }
     const filteredPosts = posts.filter(post => InstagramUtil.isValidImage(post) && InstagramUtil.hasHighLikeCount(post));
     this.logger.log(locationId, 'Retrieved', filteredPosts.length, 'items');
