@@ -5,7 +5,7 @@ export class ScrapedUserDto {
   @prop({ index: true, unique: true })
   username: string;
 
-  @prop({ default: -1 })
+  @prop()
   lastScraped: Date;
 }
 
@@ -14,7 +14,7 @@ export class ScrapedHashtagDto {
   @prop({ index: true, unique: true })
   hashtag: string;
 
-  @prop({ default: -1 })
+  @prop()
   lastScraped: Date;
 }
 
@@ -23,6 +23,6 @@ export class ScrapedLocationDto {
   @prop({ index: true, unique: true })
   locationId: string;
 
-  @prop({ default: -1 })
+  @prop()
   lastScraped: Date;
 }
