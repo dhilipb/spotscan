@@ -7,8 +7,8 @@ RUN npm install
 
 COPY . /app
 
-RUN npm run build:all
+RUN npm run build:client
 
 EXPOSE 3000
 
-CMD [ "npm", "run", "start:built" ]
+CMD [ "npm", "run", "start:server" ]
