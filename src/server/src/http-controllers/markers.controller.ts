@@ -13,22 +13,30 @@ export class MarkersController {
   private scrapedPostDto = getModelForClass(ScrapedPostDto);
 
   @Get(':latitude/:longitude')
-  public async getMarkers(req: Request, res: Response): Promise<Response> {
-    const latitude = +req.params.latitude;
-    const longitude = +req.params.longitude;
+  public async getMarkersAll(req: Request, res: Response): Promise<Response> {
+    return res.json(await this.getMarkers(+req.params.latitude, +req.params.longitude));
+  }
 
-    await this.scrapedPostDto.syncIndexes();
+  @Get('londonunmasked/:latitude/:longitude')
+  public async getMarkersLU(req: Request, res: Response): Promise<Response> {
+    return res.json(await this.getMarkers(+req.params.latitude, +req.params.longitude, 'londonunmasked'));
+  }
 
-    // const posts = [];
-    const posts = await this.scrapedPostDto.where('location').near({
-      center: {
-        type: 'Point',
-        coordinates: [latitude, longitude]
-      },
-      maxDistance: 500000
-    }); //.where('username', 'londonunmasked');
 
-    return res.json(posts);
+  private async getMarkers(latitude: number, longitude: number, username: string = null): Promise<ScrapedPostDto> {
+    // await this.scrapedPostDto.syncIndexes();
+
+    return this.scrapedPostDto
+      .where('location').near({
+        center: {
+          type: 'Point',
+          coordinates: [latitude, longitude]
+        },
+        maxDistance: 500000
+      })
+      .where(username ? 'username' : '', username);
+    // .sort({ like_count: -1 })
+    // .limit(500);
   }
 
   @Delete(':code')
