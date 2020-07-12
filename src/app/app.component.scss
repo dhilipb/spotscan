@@ -9,7 +9,6 @@
     width: 100%;
     padding: 5px;
     background-color: #fafafa;
-    position: relative;
     box-sizing: border-box;
     text-align: center;
 
@@ -20,8 +19,16 @@
 
     .status {
       position: absolute;
-      top: 15px;
-      right: 10px;
+      top: 56px;
+      left: 50%;
+      transform: translate(-50%, 0);
+      z-index: 999;
+      background: rgba(255, 255, 255, 0.9);
+      width: 100px;
+      height: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .title {
@@ -40,15 +47,16 @@
 
 
 .loader {
-  $thickness: 5px;
+  $size: 20px;
+  $thickness: $size * 0.25;
 
   border: $thickness solid #f3f3f3;
   /* Light grey */
   border-top: $thickness solid #3498db;
   /* Blue */
   border-radius: 50%;
-  width: 15px;
-  height: 15px;
+  width: $size;
+  height: $size;
   animation: spin 2s linear infinite;
 }
 
