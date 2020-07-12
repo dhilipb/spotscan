@@ -12,7 +12,7 @@
     "build:server": "cd src/server && tsc",
     "build:client": "ng build",
     "build:all": "npm run build:server && npm run build:client",
-    "start:built": "node dist/server/src/app.js",
+    "start:built": "node dist/app.js",
     "build:all:start": "npm run build:all && npm run start:built"
   },
   "private": true,
