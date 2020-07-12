@@ -63,7 +63,9 @@ export class AppComponent implements OnInit {
 
   deleteMarker(post: InstaPost) {
     if (post.code) {
+      this.loading++;
       this.apiService.deleteMarker(post.code).subscribe(() => {
+        this.loading--;
         const index = this.posts.findIndex(postX => postX.code === post.code);
         this.posts.splice(index, 1);
       });
