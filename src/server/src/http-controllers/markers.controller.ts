@@ -4,7 +4,7 @@ import { Request, Response } from 'express';
 import { injectable } from 'tsyringe';
 
 import { Logger } from '../helpers/logger';
-import { ScrapedPostDto } from '../models/scraped-post.dto';
+import { ScrapedPostDto } from '../models';
 
 @injectable()
 @Controller('api/markers')

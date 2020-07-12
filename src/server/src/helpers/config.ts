@@ -8,6 +8,7 @@ export const Config = {
   whatIfMode: false,
 
   Instagram: {
+    Scrape: false,
     DeleteCookies: false
   },
 

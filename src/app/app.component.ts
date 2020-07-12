@@ -1,10 +1,10 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { GoogleMap, MapInfoWindow, MapMarker } from '@angular/google-maps';
-import { InstaPost } from '@shared/models';
 import { get } from 'lodash';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
+import { ScrapedPostDto } from './models';
 import { ApiService } from './services';
 
 @Component({
@@ -22,8 +22,8 @@ export class AppComponent implements OnInit {
   public loading: number = 0;
 
   // Markers
-  posts: InstaPost[] = [];
-  selectedPost: InstaPost;
+  posts: ScrapedPostDto[] = [];
+  selectedPost: ScrapedPostDto;
 
   public defaultOptions = {
     center: { lat: 51.50178854430209, lng: -0.1287789730673694 },
@@ -52,7 +52,7 @@ export class AppComponent implements OnInit {
     }
   }
 
-  openInfoWindow(markerAnchor: MapMarker, post: InstaPost) {
+  openInfoWindow(markerAnchor: MapMarker, post: ScrapedPostDto) {
     this.selectedPost = post;
     this.infoWindow.open(markerAnchor);
   }
@@ -61,7 +61,7 @@ export class AppComponent implements OnInit {
     this.infoWindow.close();
   }
 
-  deleteMarker(post: InstaPost) {
+  deleteMarker(post: ScrapedPostDto) {
     if (post.code) {
       this.loading++;
       this.apiService.deleteMarker(post.code).subscribe(() => {
@@ -80,7 +80,7 @@ export class AppComponent implements OnInit {
     });
   }
 
-  private updatePosts(posts: InstaPost[], iconUrl?: string) {
+  private updatePosts(posts: ScrapedPostDto[], iconUrl?: string) {
     posts.forEach(post => {
       const alreadyExists = this.posts.find(postInLoop => postInLoop.code === post.code);
       if (!alreadyExists) {

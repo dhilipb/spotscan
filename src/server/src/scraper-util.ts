@@ -3,11 +3,9 @@ import { LocationFeedResponseMedia, TagFeedResponseItemsItem } from 'instagram-p
 import { get, has } from 'lodash';
 import { injectable } from 'tsyringe';
 
-import { InstaResponseItem, UserFeedResponseItem } from '../../shared/models/insta-post';
 import { InstagramClient, Logger } from './helpers';
 import { InstagramUtil } from './instagram-util';
-import { ScrapedPostDto } from './models/scraped-post.dto';
-import { ScrapedHashtagDto, ScrapedLocationDto, ScrapedUserDto } from './models/scraped.dto';
+import { InstaResponseItem, ScrapedHashtagDto, ScrapedLocationDto, ScrapedPostDto, ScrapedUserDto, UserFeedResponseItem } from './models';
 
 @injectable()
 export class ScraperUtil {

@@ -2,7 +2,7 @@ import 'reflect-metadata';
 
 import { container, injectable } from 'tsyringe';
 
-import { InstagramClient, Logger } from './helpers';
+import { Config, InstagramClient, Logger } from './helpers';
 import { MongoClient } from './helpers/mongo-client';
 import { AppRouteController } from './http-controllers/app-route.controller';
 import { Scraper } from './scraper';
@@ -23,7 +23,9 @@ class InstaMapsApp {
   async init(): Promise<void> {
     this.mongoClient.connect();
     this.appRouteController.start(+process.env.PORT || 3000);
-    await this.setupInstagram();
+    if (Config.Instagram.Scrape) {
+      await this.setupInstagram();
+    }
   }
 
   private async setupInstagram(): Promise<void> {

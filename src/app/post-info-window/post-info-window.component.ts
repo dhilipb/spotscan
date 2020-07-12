@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { InstaPost } from '@shared/models';
+
+import { ScrapedPostDto } from '../models';
 
 
 @Component({
@@ -9,7 +10,7 @@ import { InstaPost } from '@shared/models';
 })
 export class PostInfoWindowComponent implements OnInit {
 
-  @Input() post: InstaPost;
+  @Input() post: ScrapedPostDto;
 
   showCaption: boolean = false;
 

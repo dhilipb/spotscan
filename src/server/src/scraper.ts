@@ -3,8 +3,7 @@ import { shuffle } from 'lodash';
 import { injectable } from 'tsyringe';
 
 import { Logger, Util } from './helpers';
-import { ScrapedPostDto } from './models/scraped-post.dto';
-import { ScrapedUserDto } from './models/scraped.dto';
+import { ScrapedPostDto, ScrapedUserDto } from './models';
 import { ScraperUtil } from './scraper-util';
 
 @injectable()

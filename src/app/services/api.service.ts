@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { InstaPost } from '@shared/models';
 import { Observable } from 'rxjs';
+
+import { ScrapedPostDto } from '../models';
 
 
 @Injectable({
@@ -13,8 +14,8 @@ export class ApiService {
     private httpClient: HttpClient
   ) { }
 
-  public getMarkers(latitude: number | string, longitude: number | string): Observable<InstaPost[]> {
-    return this.httpClient.get<InstaPost[]>(`/api/markers/${latitude}/${longitude}`);
+  public getMarkers(latitude: number | string, longitude: number | string): Observable<ScrapedPostDto[]> {
+    return this.httpClient.get<ScrapedPostDto[]>(`/api/markers/${latitude}/${longitude}`);
   }
 
   public deleteMarker(markerCode: string): Observable<any> {

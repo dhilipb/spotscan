@@ -1,5 +1,5 @@
-import { InstaResponseItem } from '../../shared/models/insta-post';
 import { Util } from './helpers/util';
+import { InstaResponseItem } from './models';
 
 const MIN_DECIMAL_PLACES_COORDINATES = 4;
 export class InstagramUtil {
