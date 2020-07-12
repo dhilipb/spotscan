@@ -1,10 +1,5 @@
 // tslint:disable:variable-name
-import * as firebase from 'firebase-admin';
 import { LocationFeedResponseLocation, LocationFeedResponseMedia, TagFeedResponseItemsItem, UserFeedResponseItemsItem } from 'instagram-private-api';
-
-
-import GeoPoint = firebase.firestore.GeoPoint;
-
 
 export interface UserFeedResponseItem extends UserFeedResponseItemsItem {
   location?: LocationFeedResponseLocation;
@@ -120,7 +115,6 @@ export class InstaPost {
 }
 
 export class SimpleLocation {
-  geopoint?: GeoPoint;
   [location: string]: any;
 }
 
