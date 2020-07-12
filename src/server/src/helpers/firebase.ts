@@ -3,13 +3,14 @@ import { isNil } from 'lodash';
 import { singleton } from 'tsyringe';
 
 import { InstaPost } from '../../../shared/models/insta-post';
-import * as serviceAccount from '../../secret/firebase.json';
 import { Config } from './config';
 import { GeoFireUtil, GeoQueryArea } from './geofire.util';
 import { Logger } from './logger';
 
 import GeoPoint = firebase.firestore.GeoPoint;
 // tslint:disable: max-classes-per-file
+
+const serviceAccount = require('../../secret/firebase.json');
 firebase.initializeApp({
   credential: firebase.credential.cert({
     projectId: serviceAccount.project_id,

@@ -2,7 +2,6 @@ import 'reflect-metadata';
 
 import { container, injectable } from 'tsyringe';
 
-import * as userCredentials from '../secret/users.json';
 import { InstagramClient, Logger } from './helpers';
 import { MongoClient } from './helpers/mongo-client';
 import { AppRouteController } from './http-controllers/app-route.controller';
@@ -28,6 +27,7 @@ class InstaMapsApp {
   }
 
   private async setupInstagram(): Promise<void> {
+    const userCredentials = require('../secret/users.json');
     if (userCredentials.username && userCredentials.password) {
       await this.instagram.login(userCredentials.username, userCredentials.password);
       await this.scraper.update();
