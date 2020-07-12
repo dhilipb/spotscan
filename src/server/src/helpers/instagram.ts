@@ -5,6 +5,7 @@ import { State } from 'instagram-private-api/dist/core/state';
 import { AccountRepository } from 'instagram-private-api/dist/repositories/account.repository';
 import { MediaRepository } from 'instagram-private-api/dist/repositories/media.repository';
 import { UserRepository } from 'instagram-private-api/dist/repositories/user.repository';
+import * as path from 'path';
 import { singleton } from 'tsyringe';
 
 import { Config } from './config';
@@ -49,8 +50,8 @@ export class InstagramClient {
     this.username = username;
 
     // Cookie
-    this.userCookiePath = `./secret/cookie-${this.username}.json`;
-    this.userDevicePath = `./secret/cookie-device-${this.username}.json`;
+    this.userCookiePath = path.join(process.cwd(), 'dist', 'server', 'secret', `cookie-${this.username}.json`);
+    this.userDevicePath = path.join(process.cwd(), 'dist', 'server', 'secret', `cookie-device-${this.username}.json`);
 
     await this.checkIfValid();
 
