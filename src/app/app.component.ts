@@ -1,5 +1,6 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { GoogleMap, MapInfoWindow, MapMarker } from '@angular/google-maps';
+import MarkerClusterer from '@google/markerclusterer';
 import { get } from 'lodash';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
@@ -12,7 +13,7 @@ import { ApiService } from './services';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, AfterViewInit {
 
   @ViewChild(GoogleMap) googleMap: GoogleMap;
   @ViewChild(MapInfoWindow, { static: false }) infoWindow: MapInfoWindow;
@@ -30,6 +31,9 @@ export class AppComponent implements OnInit {
     zoom: 14,
   };
 
+  private markerCluster: MarkerClusterer;
+  private markerClusterOptions = { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' };
+
   constructor(
     private apiService: ApiService
   ) {
@@ -40,6 +44,11 @@ export class AppComponent implements OnInit {
       this.retrieveMarkers(center);
     });
     this.retrieveMarkers(new google.maps.LatLng(this.defaultOptions.center.lat, this.defaultOptions.center.lng));
+
+  }
+
+  ngAfterViewInit(): void {
+    // this.markerCluster = new MarkerClusterer(this.googleMap._googleMap, this.posts, this.markerClusterOptions);
   }
 
   mapChange() {
@@ -96,8 +105,14 @@ export class AppComponent implements OnInit {
         } as google.maps.MarkerOptions;
 
         this.posts.push(post);
+        // this.markerCluster.addMarker(new google.maps.Marker({
+        //   position: post.markerOptions.position,
+        //   icon: post.markerOptions.icon
+        // }));
       }
     });
+
+
   }
 
   private retrieveMarkers(center: google.maps.LatLng) {
