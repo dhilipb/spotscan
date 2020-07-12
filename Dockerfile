@@ -1,11 +1,14 @@
 FROM node:10-alpine
 
-WORKDIR /usr/src/app
+WORKDIR /app
 
-COPY package*.json ./
-
+COPY package.json /app/
 RUN npm install
+
+COPY . /app
 
 EXPOSE 3000
 
-CMD [ "npm", "run", "build:all:start" ]
+RUN npm run build:all
+
+CMD [ "npm", "run", "start:built" ]
