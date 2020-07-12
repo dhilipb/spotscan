@@ -4,16 +4,16 @@
   "scripts": {
     "ng": "ng",
     "start": "npm run start:client",
-    "start:client": "ng serve --proxy-config proxy.conf.json",
-    "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
     "start:server": "cd src/server && tsnd --respawn --rs --watch *.ts --clear src/app.ts",
+    "start:client": "ng serve --proxy-config proxy.conf.json",
     "build:server": "cd src/server && tsc",
-    "build:all": "npm run build && npm run build:server",
-    "start:build": "node dist/src/app.js",
-    "build:server:start": "npm run build:server && npm run start:build"
+    "build:client": "ng build",
+    "build:all": "npm run build:client && npm run build:server",
+    "start:built": "node dist/server/src/app.js",
+    "build:all:start": "npm run build:all && npm run start:built"
   },
   "private": true,
   "dependencies": {

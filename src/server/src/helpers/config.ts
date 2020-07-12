@@ -17,7 +17,9 @@ export const Config = {
 };
 
 /**
- * Update Config above with items from process.env
+ * Update Config above with items from process.env.
+ * 
+ * Example: INSTAGRAM.DELETECOOKIES: true
  */
 function updateConfig(config: any, prefix: string = ''): void {
   for (const [key, value] of Object.entries(config)) {
