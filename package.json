@@ -11,7 +11,7 @@
     "start:client": "ng serve --proxy-config proxy.conf.json",
     "build:server": "cd src/server && tsc",
     "build:client": "ng build",
-    "build:all": "npm run build:client && npm run build:server",
+    "build:all": "npm run build:server && npm run build:client",
     "start:built": "node dist/server/src/app.js",
     "build:all:start": "npm run build:all && npm run start:built"
   },
