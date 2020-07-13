@@ -4,7 +4,8 @@
   $maxWidth: 300px;
 
   .insta-image {
-    width: $maxWidth;
+    width: 100%;
+    max-width: $maxWidth;
   }
 
   .author {
