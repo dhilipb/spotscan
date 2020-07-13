@@ -12,19 +12,26 @@ export class MarkersController {
   private readonly logger: Logger = new Logger(this);
   private scrapedPostDto = getModelForClass(ScrapedPostDto);
 
-  @Get(':latitude/:longitude')
+  @Get(':latitude/:longitude/:zoom')
   public async getMarkersAll(req: Request, res: Response): Promise<Response> {
-    return res.json(await this.getMarkers(+req.params.latitude, +req.params.longitude));
+    return res.json(await this.getMarkers(+req.params.latitude, +req.params.longitude, +req.params.zoom));
   }
 
-  @Get('londonunmasked/:latitude/:longitude')
+  @Get('londonunmasked/:latitude/:longitude/:zoom')
   public async getMarkersLU(req: Request, res: Response): Promise<Response> {
-    return res.json(await this.getMarkers(+req.params.latitude, +req.params.longitude, 'londonunmasked'));
+    return res.json(await this.getMarkers(+req.params.latitude, +req.params.longitude, +req.params.zoom, 'londonunmasked'));
   }
 
 
-  private async getMarkers(latitude: number, longitude: number, username: string = null): Promise<ScrapedPostDto> {
+  private async getMarkers(latitude: number, longitude: number, zoom: number, username: string = null): Promise<ScrapedPostDto> {
     // await this.scrapedPostDto.syncIndexes();
+
+    let maxDistanceKm: number = 20;
+    if (zoom === 11) {
+      maxDistanceKm = 15;
+    } else if (zoom >= 12) {
+      maxDistanceKm = 10;
+    }
 
     return this.scrapedPostDto
       .where('location').near({
@@ -32,11 +39,11 @@ export class MarkersController {
           type: 'Point',
           coordinates: [latitude, longitude]
         },
-        maxDistance: 500000
+        maxDistance: maxDistanceKm * 1000 // in meters
       })
-      .where(username ? 'username' : '', username);
-    // .sort({ like_count: -1 })
-    // .limit(500);
+      .where(username ? 'username' : '', username)
+      .sort({ like_count: -1 })
+      .limit(500);
   }
 
   @Delete(':code')
@@ -45,8 +52,9 @@ export class MarkersController {
     if (req.headers.referer.includes('http://localhost:4200')) {
       this.logger.log('Deleting', code);
       await this.scrapedPostDto.findOneAndDelete({ code });
+      return res.json({ success: true });
     }
-    return res.json({});
+    return res.json({ success: false });
   }
 
 }

@@ -8,6 +8,7 @@ import { debounceTime } from 'rxjs/operators';
 import { ScrapedPostDto } from './models';
 import { ApiService } from './services';
 
+const MIN_ZOOM_LEVEL = 10;
 @Component({
   selector: 'ss-app-root',
   templateUrl: './app.component.html',
@@ -17,20 +18,19 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   @ViewChild(GoogleMap) googleMap: GoogleMap;
   @ViewChild(MapInfoWindow, { static: false }) infoWindow: MapInfoWindow;
-
-  private mapCenter$: Subject<google.maps.LatLng> = new Subject();
-
-  public loading: number = 0;
+  loading: number = 0;
 
   // Markers
   posts: ScrapedPostDto[] = [];
   selectedPost: ScrapedPostDto;
 
-  public defaultOptions = {
+  defaultOptions = {
     center: { lat: 51.50178854430209, lng: -0.1287789730673694 },
     zoom: 14,
   };
+  statusMessage: string; // = 'Bla bla';
 
+  private mapCenter$: Subject<google.maps.LatLng> = new Subject();
   private markerCluster: MarkerClusterer;
   private markerClusterOptions = { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' };
 
@@ -40,6 +40,10 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit() {
+  }
+
+  ngAfterViewInit(): void {
+    // this.markerCluster = new MarkerClusterer(this.googleMap._googleMap, this.posts, this.markerClusterOptions);
     this.mapCenter$.pipe(debounceTime(500)).subscribe((center: google.maps.LatLng) => {
       this.retrieveMarkers(center);
     });
@@ -47,16 +51,15 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   }
 
-  ngAfterViewInit(): void {
-    // this.markerCluster = new MarkerClusterer(this.googleMap._googleMap, this.posts, this.markerClusterOptions);
-  }
-
   mapChange() {
     if (this.googleMap) {
       const center = this.googleMap.getCenter();
       const zoom = this.googleMap.getZoom();
-      if (zoom > 7) {
+      if (zoom > MIN_ZOOM_LEVEL) {
+        this.statusMessage = '';
         this.mapCenter$.next(center);
+      } else {
+        this.statusMessage = 'Please zoom in to discover places';
       }
     }
   }
@@ -73,10 +76,12 @@ export class AppComponent implements OnInit, AfterViewInit {
   deleteMarker(post: ScrapedPostDto) {
     if (post.code) {
       this.loading++;
-      this.apiService.deleteMarker(post.code).subscribe(() => {
+      this.apiService.deleteMarker(post.code).subscribe(response => {
         this.loading--;
-        const index = this.posts.findIndex(postX => postX.code === post.code);
-        this.posts.splice(index, 1);
+        if (get(response, 'success')) {
+          const index = this.posts.findIndex(postX => postX.code === post.code);
+          this.posts.splice(index, 1);
+        }
       });
     }
   }
@@ -95,10 +100,11 @@ export class AppComponent implements OnInit, AfterViewInit {
       if (!alreadyExists) {
 
         // Marker options
+        iconUrl = post.username === 'londonunmasked' && window.location.href.includes('londonunmasked') ? 'https://i.imgur.com/yHw9r5X.png' : (iconUrl || 'https://i.imgur.com/bsT8OCA.png');
         post.markerOptions = {
           position: new google.maps.LatLng(get(post, 'location[0]'), get(post, 'location[1]')),
           icon: {
-            url: post.username === 'londonunmasked' ? 'https://i.imgur.com/yHw9r5X.png' : (iconUrl || 'https://i.imgur.com/bsT8OCA.png'),
+            url: iconUrl,
             scaledSize: new google.maps.Size(32, 32)
           } as google.maps.Icon,
           draggable: false
@@ -117,7 +123,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   private retrieveMarkers(center: google.maps.LatLng) {
     this.loading++;
-    this.apiService.getMarkers(center.lat(), center.lng()).subscribe(posts => {
+    this.apiService.getMarkers(center.lat(), center.lng(), this.googleMap.getZoom()).subscribe(posts => {
       this.loading--;
       this.updatePosts(posts);
     });

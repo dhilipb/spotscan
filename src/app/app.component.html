@@ -4,10 +4,25 @@
     <div class="status" *ngIf="loading">
       <div class="loader"></div>
     </div>
-    <div class="title">Scene Spot</div>
+
+    <div class="status" *ngIf="statusMessage">
+      <div class="status-message">
+        {{ statusMessage }}
+      </div>
+    </div>
+    <div class="title">Spot Scan</div>
   </div>
 
-  <google-map width="100%" height="100%" [center]="defaultOptions.center" [zoom]="defaultOptions.zoom" (centerChanged)="mapChange()" (mapClick)="closeInfoWindow()" (mapRightclick)="discover($event)">
+  <google-map
+    width="100%"
+    height="100%"
+    [center]="defaultOptions.center"
+    [zoom]="defaultOptions.zoom"
+    (zoomChanged)="mapChange()"
+    (centerChanged)="mapChange()"
+    (mapClick)="closeInfoWindow()"
+    (mapRightclick)="discover($event)"
+  >
     <map-marker #markerElem *ngFor="let post of posts" [options]="post.markerOptions" (mapClick)="openInfoWindow(markerElem, post)" (mapRightclick)="deleteMarker(post)"></map-marker>
     <map-info-window>
       <ss-post-info-window [post]="selectedPost"></ss-post-info-window>

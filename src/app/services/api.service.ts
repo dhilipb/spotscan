@@ -14,8 +14,8 @@ export class ApiService {
     private httpClient: HttpClient
   ) { }
 
-  public getMarkers(latitude: number | string, longitude: number | string): Observable<ScrapedPostDto[]> {
-    return this.httpClient.get<ScrapedPostDto[]>(`/api/markers/${latitude}/${longitude}`);
+  public getMarkers(latitude: number | string, longitude: number | string, zoom: number): Observable<ScrapedPostDto[]> {
+    return this.httpClient.get<ScrapedPostDto[]>(`/api/markers/${latitude}/${longitude}/${zoom}`);
   }
 
   public deleteMarker(markerCode: string): Observable<any> {
