@@ -8,7 +8,6 @@ import { debounceTime } from 'rxjs/operators';
 import { ScrapedPostDto } from './models';
 import { ApiService } from './services';
 
-const MIN_ZOOM_LEVEL = 10;
 @Component({
   selector: 'ss-app-root',
   templateUrl: './app.component.html',
@@ -54,13 +53,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   mapChange() {
     if (this.googleMap) {
       const center = this.googleMap.getCenter();
-      const zoom = this.googleMap.getZoom();
-      if (zoom > MIN_ZOOM_LEVEL) {
-        this.statusMessage = '';
-        this.mapCenter$.next(center);
-      } else {
-        this.statusMessage = 'Please zoom in to discover places';
-      }
+      this.mapCenter$.next(center);
     }
   }
 
