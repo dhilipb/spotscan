@@ -44,10 +44,16 @@
     }
   }
 
-  google-map {
+  .gmaps-container {
     flex: 1 1 auto;
-  }
+    position: relative;
 
+    ::ng-deep google-map .map-container {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+    }
+  }
 
 }
 
