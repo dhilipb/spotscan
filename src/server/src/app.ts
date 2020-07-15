@@ -1,5 +1,7 @@
 import 'reflect-metadata';
 
+import * as fs from 'fs';
+import * as path from 'path';
 import { container, injectable } from 'tsyringe';
 
 import { Config, InstagramClient, Logger } from './helpers';
@@ -29,7 +31,8 @@ class InstaMapsApp {
   }
 
   private async setupInstagram(): Promise<void> {
-    const userCredentials = require('../secret/users.json');
+    const usersJsonFile = Config.Production ? path.join(process.cwd(), 'dist', 'secret', 'users.json') : path.join('..', 'secret', 'users.json');
+    const userCredentials = JSON.parse(fs.readFileSync(usersJsonFile, 'utf-8'));
     if (userCredentials.username && userCredentials.password) {
       await this.instagram.login(userCredentials.username, userCredentials.password);
       await this.scraper.update();

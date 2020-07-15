@@ -50,8 +50,8 @@ export class InstagramClient {
     this.username = username;
 
     // Cookie
-    this.userCookiePath = path.join(process.cwd(), 'dist', 'server', 'secret', `cookie-${this.username}.json`);
-    this.userDevicePath = path.join(process.cwd(), 'dist', 'server', 'secret', `cookie-device-${this.username}.json`);
+    this.userCookiePath = path.join(process.cwd(), 'dist', 'secret', `cookie-${this.username}.json`);
+    this.userDevicePath = path.join(process.cwd(), 'dist', 'secret', `cookie-device-${this.username}.json`);
 
     await this.checkIfValid();
 

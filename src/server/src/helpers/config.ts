@@ -7,6 +7,8 @@ const logger = new Logger('Config');
 export const Config = {
   whatIfMode: false,
 
+  Production: false,
+
   Instagram: {
     Scrape: false,
     DeleteCookies: false
