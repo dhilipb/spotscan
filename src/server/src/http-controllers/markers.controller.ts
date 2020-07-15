@@ -27,10 +27,12 @@ export class MarkersController {
     // await this.scrapedPostDto.syncIndexes();
 
     let maxDistanceKm: number = 20;
-    if (zoom === 11) {
-      maxDistanceKm = 15;
-    } else if (zoom >= 12) {
+    if (zoom >= 12) {
       maxDistanceKm = 10;
+    } else if (zoom === 11) {
+      maxDistanceKm = 15;
+    } else if (zoom <= 8) {
+      maxDistanceKm = 100;
     }
 
     return this.scrapedPostDto
