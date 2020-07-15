@@ -27,7 +27,7 @@ export class AppComponent implements OnInit, AfterViewInit {
     center: { lat: 51.50178854430209, lng: -0.1287789730673694 },
     zoom: 14,
   };
-  statusMessage: string; // = 'Bla bla';
+  statusMessage: string;
 
   private mapCenter$: Subject<google.maps.LatLng> = new Subject();
   private markerCluster: MarkerClusterer;
@@ -35,11 +35,9 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   constructor(
     private apiService: ApiService
-  ) {
-  }
+  ) { }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
   ngAfterViewInit(): void {
     // this.markerCluster = new MarkerClusterer(this.googleMap._googleMap, this.posts, this.markerClusterOptions);
@@ -53,6 +51,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   mapChange() {
     if (this.googleMap) {
       const center = this.googleMap.getCenter();
+      this.statusMessage = this.googleMap.getZoom() < 10 ? 'Please zoom in to see more' : '';
       this.mapCenter$.next(center);
     }
   }
