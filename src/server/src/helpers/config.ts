@@ -12,6 +12,10 @@ export const Config = {
     DeleteCookies: false
   },
 
+  MongoDb: {
+    Credentials: 'mongodb://username:password@infitech.in:27017/spotscan?authSource=admin'
+  },
+
   Firebase: {
     Url: 'https://instamap-47a8a.firebaseio.com/'
   }
