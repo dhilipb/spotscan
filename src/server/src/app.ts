@@ -31,7 +31,7 @@ class InstaMapsApp {
   }
 
   private async setupInstagram(): Promise<void> {
-    const usersJsonFile = Config.Production ? path.join(process.cwd(), 'dist', 'secret', 'users.json') : path.join('..', 'secret', 'users.json');
+    const usersJsonFile = Config.Production ? path.join(process.cwd(), 'dist', 'secret', 'users.json') : path.join(process.cwd(), 'secret', 'users.json');
     const userCredentials = JSON.parse(fs.readFileSync(usersJsonFile, 'utf-8'));
     if (userCredentials.username && userCredentials.password) {
       await this.instagram.login(userCredentials.username, userCredentials.password);

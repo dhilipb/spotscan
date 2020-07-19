@@ -19,7 +19,7 @@ export class Scraper {
       return [];
     }
 
-    const posts = await this.scraperUtil.getByUser(username).catch(this.logger.error) || [];
+    const posts = await this.scraperUtil.getByUser(username).catch(e => this.logger.error(e)) || [];
     const simplifiedPosts: ScrapedPostDto[] = posts.map(this.scraperUtil.transformPost).filter(post => post);
     if (storeResults) {
       await this.scraperUtil.storePosts(simplifiedPosts);
@@ -32,7 +32,7 @@ export class Scraper {
       return [];
     }
 
-    const posts = await this.scraperUtil.getByHashtag(tag).catch(this.logger.error) || [];
+    const posts = await this.scraperUtil.getByHashtag(tag).catch(e => this.logger.error(e)) || [];
     const simplifiedPosts: ScrapedPostDto[] = posts.map(this.scraperUtil.transformPost).filter(post => post);
     if (storeResults) {
       await this.scraperUtil.storePosts(simplifiedPosts);
@@ -45,7 +45,7 @@ export class Scraper {
       return [];
     }
 
-    const posts = await this.scraperUtil.getByLocation(locationId).catch(this.logger.error) || [];
+    const posts = await this.scraperUtil.getByLocation(locationId).catch(e => this.logger.error(e)) || [];
     const simplifiedPosts: ScrapedPostDto[] = posts.map(this.scraperUtil.transformPost).filter(post => post);
     if (storeResults) {
       await this.scraperUtil.storePosts(simplifiedPosts);

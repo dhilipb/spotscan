@@ -55,8 +55,8 @@ export class ScraperUtil {
 
   async getByUser(username: string): Promise<UserFeedResponseItem[]> {
     this.logger.log(username, 'getByUser');
-    const account = await this.instagram.client.user.searchExact(username).catch(this.logger.error);
-    if (account) {
+    const account = await this.instagram.client.user.searchExact(username).catch(e => this.logger.error(e));
+    if (account && !account.is_private) {
       const feed = await this.instagram.feed.user(account.pk);
 
       const scrapedUserDto = getModelForClass(ScrapedUserDto);
