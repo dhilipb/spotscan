@@ -16,7 +16,7 @@ export class MarkersController {
   public async getMarkersAll(req: Request, res: Response): Promise<Response> {
     const referer = req?.headers?.referer || '';
     if (referer.includes('localhost') || referer.includes('spotscan')) {
-      return res.json(await this.getMarkers(+req.query.latitude, +req.query.longitude, +req.query.zoom));
+      return res.json(await this.getMarkers(+req.query.latitude, +req.query.longitude, +req.query.radius));
     }
     return res.json({});
   }
@@ -25,7 +25,7 @@ export class MarkersController {
   public async getMarkersLU(req: Request, res: Response): Promise<Response> {
     const referer = req?.headers?.referer || '';
     if (referer.includes('londonunmasked')) {
-      return res.json(await this.getMarkers(+req.query.latitude, +req.query.longitude, +req.query.zoom, 'londonunmasked'));
+      return res.json(await this.getMarkers(+req.query.latitude, +req.query.longitude, +req.query.radius, 'londonunmasked'));
     }
     return res.json({});
   }
@@ -38,17 +38,11 @@ export class MarkersController {
   }
 
 
-  private async getMarkers(latitude: number, longitude: number, zoom: number, username: string = null): Promise<ScrapedPostDto> {
+  private async getMarkers(latitude: number, longitude: number, radius: number, username: string = null): Promise<ScrapedPostDto> {
     // await this.scrapedPostDto.syncIndexes();
 
-    let maxDistanceKm: number = 20;
-    if (zoom >= 12) {
-      maxDistanceKm = 10;
-    } else if (zoom === 11) {
-      maxDistanceKm = 15;
-    } else if (zoom <= 8) {
-      maxDistanceKm = 100;
-    }
+    // Max 100 kms radius
+    radius = Math.min(radius, 100 * 1000);
 
     return this.scrapedPostDto
       .where('location').near({
@@ -56,7 +50,7 @@ export class MarkersController {
           type: 'Point',
           coordinates: [latitude, longitude]
         },
-        maxDistance: maxDistanceKm * 1000 // in meters
+        maxDistance: radius // in meters
       })
       .where(username ? 'username' : '', username)
       .sort({ like_count: -1 })

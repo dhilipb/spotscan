@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { GoogleMap, MapInfoWindow, MapMarker } from '@angular/google-maps';
 import MarkerClusterer from '@google/markerclusterer';
 import { get } from 'lodash';
@@ -13,7 +13,7 @@ import { ApiService } from './services';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit, AfterViewInit {
+export class AppComponent implements OnInit {
 
   @ViewChild(GoogleMap) googleMap: GoogleMap;
   @ViewChild(MapInfoWindow, { static: false }) infoWindow: MapInfoWindow;
@@ -24,7 +24,7 @@ export class AppComponent implements OnInit, AfterViewInit {
   selectedPost: ScrapedPostDto;
 
   defaultOptions: google.maps.MapOptions = {
-    center: { lat: 51.50178854430209, lng: -0.1287789730673694 },
+    center: new google.maps.LatLng(51.50178854430209, -0.1287789730673694),
     zoom: 14,
     clickableIcons: false
   };
@@ -38,15 +38,15 @@ export class AppComponent implements OnInit, AfterViewInit {
     private apiService: ApiService
   ) { }
 
-  ngOnInit() { }
-
-  ngAfterViewInit(): void {
-    // this.markerCluster = new MarkerClusterer(this.googleMap._googleMap, this.posts, this.markerClusterOptions);
+  ngOnInit() {
+    this.retrieveMarkers(this.defaultOptions.center as google.maps.LatLng);
     this.mapCenter$.pipe(debounceTime(500)).subscribe((center: google.maps.LatLng) => {
       this.retrieveMarkers(center);
     });
-    this.retrieveMarkers(new google.maps.LatLng(this.defaultOptions.center.lat, this.defaultOptions.center.lng));
+  }
 
+  mapInit(): void {
+    // this.markerCluster = new MarkerClusterer(this.googleMap._googleMap, this.posts, this.markerClusterOptions);
   }
 
   mapChange() {
@@ -115,8 +115,24 @@ export class AppComponent implements OnInit, AfterViewInit {
   }
 
   private retrieveMarkers(center: google.maps.LatLng) {
+    if (!this.googleMap) {
+      setTimeout(() => this.retrieveMarkers(center), 1000);
+      return;
+    }
+
     this.loading++;
-    this.apiService.getMarkers(center.lat().toString(), center.lng().toString(), this.googleMap.getZoom().toString()).subscribe(posts => {
+
+    const bounds = this.googleMap.getBounds();
+    let radius = 3000;
+    if (bounds && center) {
+      const ne = bounds.getNorthEast();
+      // Calculate radius (in meters).
+      radius = +google.maps.geometry.spherical.computeDistanceBetween(center, ne).toFixed(0);
+      console.log(radius);
+    }
+
+
+    this.apiService.getMarkers(center.lat().toString(), center.lng().toString(), radius.toString()).subscribe(posts => {
       this.loading--;
       this.updatePosts(posts);
     });

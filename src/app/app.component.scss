@@ -14,6 +14,32 @@
       top: 0;
       bottom: 0;
     }
-  }
 
+    .maps-crosshair {
+      $size: 30px;
+      $thickness: 3px;
+      $color: #000;
+
+      position: absolute;
+      width: $thickness;
+      height: $size;
+      background: $color;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      z-index: 99;
+
+      &:before {
+        content: '';
+        position: absolute;
+        width: $size;
+        height: $thickness;
+        background: $color;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    }
+  }
 }
