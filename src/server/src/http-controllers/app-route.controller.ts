@@ -5,6 +5,7 @@ import * as morgan from 'morgan';
 import * as path from 'path';
 import { injectable } from 'tsyringe';
 
+import { Config } from '../helpers/config';
 import { Logger } from '../helpers/logger';
 import { DiscoverController } from './discover.controller';
 import { MarkersController } from './markers.controller';
@@ -21,7 +22,10 @@ export class AppRouteController extends Server {
   }
 
   private setupControllers(): void {
-    this.app.use(cors());
+    if (!Config.Production) {
+      this.app.use(cors());
+    }
+
     this.app.use(morgan('dev'));
 
     const staticLocation = path.join(process.cwd(), 'dist', 'frontend');

@@ -12,14 +12,20 @@ export class MarkersController {
   private readonly logger: Logger = new Logger(this);
   private scrapedPostDto = getModelForClass(ScrapedPostDto);
 
-  @Get(':latitude/:longitude/:zoom')
+  @Get('')
   public async getMarkersAll(req: Request, res: Response): Promise<Response> {
-    return res.json(await this.getMarkers(+req.params.latitude, +req.params.longitude, +req.params.zoom));
+    if (req.headers.referer.includes('localhost') || req.headers.referer.includes('spotscan')) {
+      return res.json(await this.getMarkers(+req.query.latitude, +req.query.longitude, +req.query.zoom));
+    }
+    return res.json({});
   }
 
-  @Get('londonunmasked/:latitude/:longitude/:zoom')
+  @Get('londonunmasked')
   public async getMarkersLU(req: Request, res: Response): Promise<Response> {
-    return res.json(await this.getMarkers(+req.params.latitude, +req.params.longitude, +req.params.zoom, 'londonunmasked'));
+    if (req.headers.referer.includes('londonunmasked')) {
+      return res.json(await this.getMarkers(+req.query.latitude, +req.query.longitude, +req.query.zoom, 'londonunmasked'));
+    }
+    return res.json({});
   }
 
   @Get('count')

@@ -115,7 +115,7 @@ export class AppComponent implements OnInit, AfterViewInit {
 
   private retrieveMarkers(center: google.maps.LatLng) {
     this.loading++;
-    this.apiService.getMarkers(center.lat(), center.lng(), this.googleMap.getZoom()).subscribe(posts => {
+    this.apiService.getMarkers(center.lat().toString(), center.lng().toString(), this.googleMap.getZoom().toString()).subscribe(posts => {
       this.loading--;
       this.updatePosts(posts);
     });
