@@ -7,12 +7,14 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DateAgoPipe } from './pipes/date-ago.pipe';
 import { PostInfoWindowComponent } from './post-info-window/post-info-window.component';
+import { HeaderComponent } from './header/header.component';
 
 @NgModule({
    declarations: [
       AppComponent,
       PostInfoWindowComponent,
-      DateAgoPipe
+      DateAgoPipe,
+      HeaderComponent
    ],
    imports: [
       BrowserModule,

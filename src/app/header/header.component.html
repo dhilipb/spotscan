@@ -1,0 +1,12 @@
+<header class="header">
+  <div class="status" *ngIf="loading">
+    <div class="loader"></div>
+  </div>
+
+  <div class="status" *ngIf="statusMessage">
+    <div class="status-message">
+      {{ statusMessage }}
+    </div>
+  </div>
+  <div class="title">Spot Scan</div>
+</header>

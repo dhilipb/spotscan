@@ -1,18 +1,6 @@
 <!-- Official docs at https://github.com/angular/components/blob/master/src/google-maps/README.md -->
 <div class="container">
-  <div class="header">
-    <div class="status" *ngIf="loading">
-      <div class="loader"></div>
-    </div>
-
-    <div class="status" *ngIf="statusMessage">
-      <div class="status-message">
-        {{ statusMessage }}
-      </div>
-    </div>
-    <div class="title">Spot Scan</div>
-  </div>
-
+  <ss-header [loading]="loading" [statusMessage]="statusMessage"></ss-header>
   <div class="gmaps-container">
     <google-map
       width="100%"
