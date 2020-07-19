@@ -23,9 +23,10 @@ export class AppComponent implements OnInit, AfterViewInit {
   posts: ScrapedPostDto[] = [];
   selectedPost: ScrapedPostDto;
 
-  defaultOptions = {
+  defaultOptions: google.maps.MapOptions = {
     center: { lat: 51.50178854430209, lng: -0.1287789730673694 },
     zoom: 14,
+    clickableIcons: false
   };
   statusMessage: string;
 
