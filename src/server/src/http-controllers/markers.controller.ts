@@ -22,6 +22,13 @@ export class MarkersController {
     return res.json(await this.getMarkers(+req.params.latitude, +req.params.longitude, +req.params.zoom, 'londonunmasked'));
   }
 
+  @Get('count')
+  public async getCount(req: Request, res: Response): Promise<Response> {
+    const model = await getModelForClass(ScrapedPostDto);
+    const count = await model.count({}).exec();
+    return res.json({ count });
+  }
+
 
   private async getMarkers(latitude: number, longitude: number, zoom: number, username: string = null): Promise<ScrapedPostDto> {
     // await this.scrapedPostDto.syncIndexes();
