@@ -55,11 +55,13 @@ export class ScraperUtil {
 
   async getByUser(username: string): Promise<UserFeedResponseItem[]> {
     this.logger.log(username, 'getByUser');
+
+    const scrapedUserDto = getModelForClass(ScrapedUserDto);
+
     const account = await this.instagram.client.user.searchExact(username).catch(e => this.logger.error(e));
     if (account && !account.is_private) {
       const feed = await this.instagram.feed.user(account.pk);
 
-      const scrapedUserDto = getModelForClass(ScrapedUserDto);
       await scrapedUserDto.findOneAndUpdate({ username }, { username, lastScraped: new Date() }, { upsert: true });
 
       const posts: UserFeedResponseItem[] = [];
@@ -70,6 +72,9 @@ export class ScraperUtil {
       const filteredPosts = posts.filter(InstagramUtil.isValidImage);
       this.logger.log(username, 'Retrieved', filteredPosts.length, 'items');
       return filteredPosts;
+    } else {
+      this.logger.log(username, 'Deleting - private or unknown user');
+      await scrapedUserDto.deleteOne({ username }).exec();
     }
 
     return [];
