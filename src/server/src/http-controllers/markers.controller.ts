@@ -14,7 +14,8 @@ export class MarkersController {
 
   @Get('')
   public async getMarkersAll(req: Request, res: Response): Promise<Response> {
-    if (req.headers.referer.includes('localhost') || req.headers.referer.includes('spotscan')) {
+    const referer = req?.headers?.referer || '';
+    if (referer.includes('localhost') || referer.includes('spotscan')) {
       return res.json(await this.getMarkers(+req.query.latitude, +req.query.longitude, +req.query.zoom));
     }
     return res.json({});
@@ -22,7 +23,8 @@ export class MarkersController {
 
   @Get('londonunmasked')
   public async getMarkersLU(req: Request, res: Response): Promise<Response> {
-    if (req.headers.referer.includes('londonunmasked')) {
+    const referer = req?.headers?.referer || '';
+    if (referer.includes('londonunmasked')) {
       return res.json(await this.getMarkers(+req.query.latitude, +req.query.longitude, +req.query.zoom, 'londonunmasked'));
     }
     return res.json({});
