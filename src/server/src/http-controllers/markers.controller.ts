@@ -42,7 +42,7 @@ export class MarkersController {
     // await this.scrapedPostDto.syncIndexes();
 
     // Max 100 kms radius
-    radius = Math.min(radius, 100 * 1000);
+    radius = Math.min(radius, 150 * 1000);
 
     return this.scrapedPostDto
       .where('location').near({
