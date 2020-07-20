@@ -54,7 +54,7 @@ export class MarkersController {
       })
       .where(username ? 'username' : '', username)
       .sort({ like_count: -1 })
-      .limit(500);
+      .limit(1000);
   }
 
   @Delete(':code')
