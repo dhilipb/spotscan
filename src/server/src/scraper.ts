@@ -54,7 +54,8 @@ export class Scraper {
   }
 
   async update(): Promise<void> {
-    const users = await getModelForClass(ScrapedUserDto).find({ lastScraped: -1 }).exec();
+    let users = await getModelForClass(ScrapedUserDto).find().exec();
+    users = users.filter(model => !model.lastScraped);
     const userNames = shuffle(users.map(model => model.username));
     for (const user of userNames) {
       this.logger.log("Scraping user", user);
