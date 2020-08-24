@@ -7,6 +7,7 @@ import { container, injectable } from 'tsyringe';
 import { Config, InstagramClient, Logger } from './helpers';
 import { MongoClient } from './helpers/mongo-client';
 import { AppRouteController } from './http-controllers/app-route.controller';
+import { ImageChecker } from './image-checker';
 import { Scraper } from './scraper';
 
 
@@ -18,7 +19,8 @@ class InstaMapsApp {
     private appRouteController: AppRouteController,
     private instagram: InstagramClient,
     private mongoClient: MongoClient,
-    private scraper: Scraper
+    private scraper: Scraper,
+    private imageChecker: ImageChecker
   ) {
   }
 
@@ -35,6 +37,7 @@ class InstaMapsApp {
     const userCredentials = JSON.parse(fs.readFileSync(usersJsonFile, 'utf-8'));
     if (userCredentials.username && userCredentials.password) {
       await this.instagram.login(userCredentials.username, userCredentials.password);
+      this.imageChecker.check();
       await this.scraper.update();
     }
   }
