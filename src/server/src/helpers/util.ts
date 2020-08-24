@@ -15,9 +15,14 @@ export class Util {
     return ((num + '').split('.')[1] || []).length;
   }
 
-  public static async randomSleep(min: number = 500, max: number = 2000): Promise<void> {
-    const randomTime = Util.randomBetween(min, max);
+  public static async randomSleep(min: number = 0.5, max: number = 2, unit: 'ms' | 'm' = 'm'): Promise<void> {
+    let randomTime = Util.randomBetween(min, max);
     console.log('Sleeping for', randomTime);
+
+    if (unit === 'ms') {
+      randomTime = randomTime * 1000;
+    }
+
     await new Promise(r => setTimeout(r, randomTime));
   }
 

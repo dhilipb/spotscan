@@ -60,7 +60,7 @@ export class Scraper {
     for (const user of userNames) {
       this.logger.log("Scraping user", user);
       await this.scrapeUser(user);
-      await Util.randomSleep(Util.minutesToMs(1), Util.minutesToMs(20));
+      await Util.randomSleep(1, 20);
     }
 
     // await Util.randomSleep();
