@@ -17,12 +17,12 @@ export class Util {
 
   public static async randomSleep(min: number = 0.5, max: number = 2, unit: 'ms' | 'm' = 'm'): Promise<void> {
     let randomTime = Util.randomBetween(min, max);
-    console.log('Sleeping for', randomTime);
 
     if (unit === 'm') {
       randomTime = randomTime * 1000;
     }
 
+    console.log('Sleeping for', randomTime);
     await new Promise(r => setTimeout(r, randomTime));
   }
 

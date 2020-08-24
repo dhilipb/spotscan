@@ -23,7 +23,7 @@ export class ImageChecker {
     const posts = await getModelForClass(ScrapedPostDto).find().exec();
     for (let post of posts) {
       const image = last(last(post.images));
-      this.logger.log('Checking image', post.code, image);
+      this.logger.log('Checking image', post.code);
 
       const imageContent = await (await fetch(image)).text();
       if (imageContent.includes('URL signature expired')) {
@@ -36,7 +36,7 @@ export class ImageChecker {
         this.logger.log('Updating', post.code);
         await getModelForClass(ScrapedPostDto).findOneAndUpdate({ code: post.code }, post);
       }
-      await Util.randomSleep(1, 5);
+      await Util.randomSleep(2, 10);
 
     }
 
