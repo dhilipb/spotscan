@@ -19,7 +19,7 @@ export class Util {
     let randomTime = Util.randomBetween(min, max);
     console.log('Sleeping for', randomTime);
 
-    if (unit === 'ms') {
+    if (unit === 'm') {
       randomTime = randomTime * 1000;
     }
 
