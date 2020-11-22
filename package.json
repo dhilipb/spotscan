@@ -8,7 +8,7 @@
     "lint": "ng lint",
     "e2e": "ng e2e",
     "start:server": "cd src/server && tsnd --respawn --watch *.ts --clear src/app.ts",
-    "start:client": "ng serve --proxy-config proxy.conf.json",
+    "start:client": "ng serve --proxy-config proxy.conf.json --open",
     "build:server": "cd src/server && tsc",
     "build:client": "ng build",
     "build:all": "npm run build:server && npm run build:client",

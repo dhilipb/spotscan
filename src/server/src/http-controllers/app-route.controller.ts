@@ -29,7 +29,6 @@ export class AppRouteController extends Server {
     this.app.use(morgan('dev'));
 
     const staticLocation = path.join(process.cwd(), 'dist', 'frontend');
-    this.logger.log(staticLocation);
     this.app.use(express.static(staticLocation));
     super.addControllers([this.markersController, this.discoverController]);
   }

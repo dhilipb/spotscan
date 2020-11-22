@@ -1,4 +1,6 @@
+import * as fs from 'fs';
 import { get, has, isBoolean, isNumber, isString, set, toNumber } from 'lodash';
+import * as path from 'path';
 
 import { Logger } from './logger';
 
@@ -62,5 +64,12 @@ function updateConfig(config: any, prefix: string = ''): void {
   }
 }
 
+const configSecretFile = path.join(process.cwd(), 'secret', 'config.json');
+if (fs.existsSync(configSecretFile)) {
+  const configFile = JSON.parse(fs.readFileSync(configSecretFile).toString());
+  Object.entries(configFile).forEach(([key, value]) => {
+    process.env[key] = value.toString();
+  })
+}
 updateConfig(Config);
 

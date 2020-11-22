@@ -16,6 +16,7 @@ export class MongoClient {
       return;
     }
 
+    this.logger.log('Connecting to Database', Config.MongoDb.Credentials);
     Mongoose.connect(Config.MongoDb.Credentials, {
       useNewUrlParser: true,
       useFindAndModify: false,
