@@ -52,6 +52,10 @@ export class ScraperUtil {
   }
 
   async storePosts(posts: ScrapedPostDto[]): Promise<void> {
+    if (!posts.length) {
+      return;
+    }
+
     this.logger.log('Storing posts', posts.length)
 
     const scrapedPostDto = getModelForClass(ScrapedPostDto)
