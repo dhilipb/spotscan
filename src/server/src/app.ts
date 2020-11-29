@@ -4,7 +4,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { container, injectable } from 'tsyringe';
 
-import { Config, InstagramClient, Logger } from './helpers';
+import { Config, ConfigUpdater, InstagramClient, Logger } from './helpers';
 import { MongoClient } from './helpers/mongo-client';
 import { AppRouteController } from './http-controllers/app-route.controller';
 import { ImageChecker } from './image-checker';
@@ -14,9 +14,18 @@ import { Scraper } from './scraper';
 class InstaMapsApp {
   private readonly logger: Logger = new Logger(this)
 
-  constructor(private appRouteController: AppRouteController, private instagram: InstagramClient, private mongoClient: MongoClient, private scraper: Scraper, private imageChecker: ImageChecker) {}
+  constructor(
+    private appRouteController: AppRouteController,
+    private instagram: InstagramClient,
+    private mongoClient: MongoClient,
+    private scraper: Scraper,
+    private imageChecker: ImageChecker,
+    private configUpdater: ConfigUpdater
+  ) { }
 
   async init(): Promise<void> {
+    this.configUpdater.initConfig();
+
     this.appRouteController.start(+process.env.PORT || 3000)
 
     await this.mongoClient.connect()
