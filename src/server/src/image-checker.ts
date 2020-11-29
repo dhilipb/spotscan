@@ -40,7 +40,7 @@ export class ImageChecker {
           this.logger.log(post.code, 'Uploaded to imgur', imgurLink);
           post.images = [imgurLink]
           await getModelForClass(ScrapedPostDto).findOneAndUpdate({ code: post.code }, post)
-          await Util.randomSleep(2, 10)
+          await Util.randomSleep(30, 60)
         
         } else {
           // error with imgur
