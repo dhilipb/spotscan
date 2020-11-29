@@ -44,7 +44,7 @@ export class ImageChecker {
         
         } else {
           // error with imgur
-          await Util.randomSleep(2, 10, TimeUnit.M)
+          await Util.randomSleep(2, 10, TimeUnit.MINUTES)
         }
         
 

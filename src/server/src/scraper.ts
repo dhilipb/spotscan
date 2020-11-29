@@ -2,7 +2,7 @@ import { getModelForClass } from '@typegoose/typegoose';
 import { shuffle } from 'lodash';
 import { injectable } from 'tsyringe';
 
-import { Config, Logger, Util } from './helpers';
+import { Config, Logger, TimeUnit, Util } from './helpers';
 import { ScrapedHashtagDto, ScrapedLocationDto, ScrapedPostDto, ScrapedUserDto } from './models';
 import { ScraperUtil } from './scraper-util';
 
@@ -10,7 +10,7 @@ import { ScraperUtil } from './scraper-util';
 export class Scraper {
   private readonly logger: Logger = new Logger(this)
 
-  constructor(private scraperUtil: ScraperUtil) {}
+  constructor(private scraperUtil: ScraperUtil) { }
 
   async scrapeUser(username: string, storeResults: boolean = true): Promise<ScrapedPostDto[]> {
     if (!username) {
@@ -55,13 +55,13 @@ export class Scraper {
 
     // Scrape random users form list
     if (Config.Instagram.Scrape.Users) {
-      let users = await getModelForClass(ScrapedUserDto).find().exec()
-      // users = users.filter((model) => !model.lastScraped)
+      let users = await getModelForClass(ScrapedUserDto).find().sort({ lastScraped: 'descending' }).exec()
+
       const userNames = shuffle(users.map((model) => model.username))
       for (const user of userNames) {
         this.logger.log('Scraping user', user)
         await this.scrapeUser(user)
-        await Util.randomSleep(1, 20)
+        await Util.randomSleep(1, 5, TimeUnit.MINUTES)
       }
     }
 

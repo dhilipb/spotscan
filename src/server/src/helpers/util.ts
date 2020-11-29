@@ -1,5 +1,5 @@
 export enum TimeUnit {
-  MS, S, M
+  MILLISECONDS, SECONDS, MINUTES
 }
 
 export class Util {
@@ -19,14 +19,14 @@ export class Util {
     return ((num + '').split('.')[1] || []).length
   }
 
-  public static async randomSleep(min: number = 0.5, max: number = 2, unit: TimeUnit = TimeUnit.S): Promise<void> {
+  public static async randomSleep(min: number = 0.5, max: number = 2, unit: TimeUnit = TimeUnit.SECONDS): Promise<void> {
     
     let randomTime = Util.randomBetween(min, max)
 
-    if (unit === TimeUnit.S) {
+    if (unit === TimeUnit.SECONDS) {
       console.log('Sleeping for', randomTime, 'seconds')
       randomTime = randomTime * 1000
-    } else if (unit === TimeUnit.M) {
+    } else if (unit === TimeUnit.MINUTES) {
       console.log('Sleeping for', randomTime, 'minutes')
       randomTime = randomTime * 60 * 1000;
     } else {

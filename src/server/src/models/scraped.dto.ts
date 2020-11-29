@@ -6,7 +6,7 @@ export class ScrapedUserDto {
   username: string;
 
   @prop()
-  lastScraped: Date | number;
+  lastScraped: Date;
 }
 
 @modelOptions({ options: { customName: 'Hashtag' } })
