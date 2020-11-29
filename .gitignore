@@ -48,4 +48,5 @@ Thumbs.db
 # Server
 **/secret/*
 !.gitkeep
+!*.example
 package-lock.json
