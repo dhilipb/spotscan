@@ -11,25 +11,22 @@ export class MongoClient {
 
   public database: Mongoose.Connection;
 
-  public connect(): void {
+  public async connect(): Promise<any> {
     if (this.database) {
       return;
     }
 
-    this.logger.log('Connecting to Database', Config.MongoDb.Credentials);
-    Mongoose.connect(Config.MongoDb.Credentials, {
+    this.logger.log('Connecting to database', Config.MongoDb.Credentials);
+    await Mongoose.connect(Config.MongoDb.Credentials, {
       useNewUrlParser: true,
       useFindAndModify: false,
-      useUnifiedTopology: true,
+      useUnifiedTopology: Config.MongoDb.IsReplicaSet,
       useCreateIndex: true,
-    });
-
-    this.database = Mongoose.connection;
-    this.database.once("open", async () => {
+    }).then(() => {
       this.logger.log("Connected to database");
-    });
-    this.database.on("error", e => {
-      this.logger.log("Error connecting to database", e);
+      this.database = Mongoose.connection;
+    }, error => {
+      console.log(error);
     });
   }
 

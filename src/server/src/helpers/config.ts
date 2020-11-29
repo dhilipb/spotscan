@@ -12,16 +12,26 @@ export const Config = {
   Production: false,
 
   Instagram: {
-    Scrape: false,
+    Scrape: {
+      Users: false,
+      Tags: false,
+      Locations: false
+    },
+    ImageChecker: true,
     DeleteCookies: false
   },
 
   MongoDb: {
-    Credentials: 'mongodb://username:password@infitech.in:27017/spotscan?authSource=admin'
+    Credentials: 'mongodb://username:password@infitech.in:27017/spotscan?authSource=admin',
+    IsReplicaSet: false
   },
 
   Firebase: {
     Url: 'https://instamap-47a8a.firebaseio.com/'
+  },
+
+  Imgur: {
+    ClientId: '43652b743b5a7a0'
   }
 };
 

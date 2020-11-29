@@ -128,7 +128,6 @@ export class AppComponent implements OnInit {
       const ne = bounds.getNorthEast();
       // Calculate radius (in meters).
       radius = +google.maps.geometry.spherical.computeDistanceBetween(center, ne).toFixed(0);
-      console.log(radius);
     }
 
 

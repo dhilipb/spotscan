@@ -28,6 +28,7 @@
     "@angular/platform-browser-dynamic": "~9.1.9",
     "@angular/router": "~9.1.9",
     "@overnightjs/core": "^1.7.4",
+    "@rmp135/imgur": "^0.5.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "instagram-private-api": "^1.43.3",

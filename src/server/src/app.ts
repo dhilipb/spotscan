@@ -10,38 +10,32 @@ import { AppRouteController } from './http-controllers/app-route.controller';
 import { ImageChecker } from './image-checker';
 import { Scraper } from './scraper';
 
-
 @injectable()
 class InstaMapsApp {
-  private readonly logger: Logger = new Logger(this);
+  private readonly logger: Logger = new Logger(this)
 
-  constructor(
-    private appRouteController: AppRouteController,
-    private instagram: InstagramClient,
-    private mongoClient: MongoClient,
-    private scraper: Scraper,
-    private imageChecker: ImageChecker
-  ) {
-  }
+  constructor(private appRouteController: AppRouteController, private instagram: InstagramClient, private mongoClient: MongoClient, private scraper: Scraper, private imageChecker: ImageChecker) {}
 
   async init(): Promise<void> {
-    this.mongoClient.connect();
-    this.appRouteController.start(+process.env.PORT || 3000);
-    if (Config.Instagram.Scrape) {
-      await this.setupInstagram();
-    }
+    this.appRouteController.start(+process.env.PORT || 3000)
+
+    await this.mongoClient.connect()
+    await this.setupInstagram()
   }
 
   private async setupInstagram(): Promise<void> {
-    const usersJsonFile = Config.Production ? path.join(process.cwd(), 'dist', 'secret', 'users.json') : path.join(process.cwd(), 'secret', 'users.json');
-    const userCredentials = JSON.parse(fs.readFileSync(usersJsonFile, 'utf-8'));
+    const usersJsonFile = Config.Production ? path.join(process.cwd(), 'dist', 'secret', 'users.json') : path.join(process.cwd(), 'secret', 'users.json')
+    const userCredentials = JSON.parse(fs.readFileSync(usersJsonFile, 'utf-8'))
     if (userCredentials.username && userCredentials.password) {
-      await this.instagram.login(userCredentials.username, userCredentials.password);
-      this.imageChecker.check();
-      await this.scraper.update();
+      await this.instagram.login(userCredentials.username, userCredentials.password)
+      await this.scraper.update()
+
+      if (Config.Instagram.ImageChecker) {
+        this.imageChecker.check()
+      }
     }
   }
 }
 
-const app = container.resolve(InstaMapsApp);
-app.init();
+const app = container.resolve(InstaMapsApp)
+app.init()
