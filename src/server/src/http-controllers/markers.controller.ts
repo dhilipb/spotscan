@@ -1,6 +1,7 @@
 import { Controller, Delete, Get } from '@overnightjs/core';
 import { getModelForClass } from '@typegoose/typegoose';
 import { Request, Response } from 'express';
+import { Config } from 'src/helpers';
 import { injectable } from 'tsyringe';
 
 import { Logger } from '../helpers/logger';
@@ -16,7 +17,7 @@ export class MarkersController {
   public async getMarkersAll(req: Request, res: Response): Promise<Response> {
     const referer = req?.headers?.referer || '';
     if (referer.includes('localhost') || referer.includes('spotscan')) {
-      return res.json(await this.getMarkers(+req.query.latitude, +req.query.longitude, +req.query.radius));
+      return res.json(await this.getMarkers(+req.query.latitude, +req.query.longitude, +req.query.radius, req.params.user));
     }
     return res.json({});
   }
@@ -60,7 +61,7 @@ export class MarkersController {
   @Delete(':code')
   public async deleteMarker(req: Request, res: Response): Promise<Response> {
     const code = req.params.code;
-    if (req.headers.referer.includes('http://localhost:4200')) {
+    if (req.headers.referer.includes('http://localhost:4200') || req.headers.referer.includes('admin=' + Config.Admin.DeletePass)) {
       this.logger.log('Deleting', code);
       await this.scrapedPostDto.findOneAndDelete({ code });
       return res.json({ success: true });

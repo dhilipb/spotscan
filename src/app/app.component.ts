@@ -130,8 +130,9 @@ export class AppComponent implements OnInit {
       radius = +google.maps.geometry.spherical.computeDistanceBetween(center, ne).toFixed(0);
     }
 
-
-    this.apiService.getMarkers(center.lat().toString(), center.lng().toString(), radius.toString()).subscribe(posts => {
+    const urlSearchParams = new URLSearchParams(window.location.search);
+    const user = urlSearchParams.get('user');
+    this.apiService.getMarkers(center.lat().toString(), center.lng().toString(), radius.toString(), user).subscribe(posts => {
       this.loading--;
       this.updatePosts(posts);
     });
