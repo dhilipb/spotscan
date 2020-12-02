@@ -13,7 +13,8 @@ export class ImageChecker {
   private imgurClient: Client
 
   constructor(private instagram: InstagramClient, private scraperUtil: ScraperUtil) {
-    this.imgurClient = new Client(Config.Imgur.ClientId)
+    const clientId = Util.randomFrom(Config.Imgur.ClientId.split(','));
+    this.imgurClient = new Client(clientId);
   }
 
   async check(): Promise<void> {
