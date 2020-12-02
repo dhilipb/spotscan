@@ -3,6 +3,17 @@ export enum TimeUnit {
 }
 
 export class Util {
+
+  public static randomString(length: number): string {
+    var result = '';
+    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    var charactersLength = characters.length;
+    for (var i = 0; i < length; i++) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+    }
+    return result;
+  }
+
   public static randomBetween(min: number, max: number): number {
     return Math.floor(Math.random() * (max - min + 1) + min)
   }
@@ -20,7 +31,7 @@ export class Util {
   }
 
   public static async randomSleep(min: number = 0.5, max: number = 2, unit: TimeUnit = TimeUnit.SECONDS): Promise<void> {
-    
+
     let randomTime = Util.randomBetween(min, max)
 
     if (unit === TimeUnit.SECONDS) {
