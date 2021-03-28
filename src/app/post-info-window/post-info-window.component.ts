@@ -1,8 +1,6 @@
-import { Component, Input, OnInit, Output } from '@angular/core';
-import { EventEmitter } from 'events';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 import { ScrapedPostDto } from '../models';
-import { ApiService } from '../services';
 
 
 @Component({
@@ -13,13 +11,11 @@ import { ApiService } from '../services';
 export class PostInfoWindowComponent implements OnInit {
 
   @Input() post: ScrapedPostDto;
-  @Output() deletePost: EventEmitter = new EventEmitter();
+  @Output() deletePost: EventEmitter<ScrapedPostDto> = new EventEmitter();
 
   showCaption: boolean = false;
 
-  constructor(
-    private apiService: ApiService
-  ) { }
+  constructor() { }
 
   ngOnInit() {
   }

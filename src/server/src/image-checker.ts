@@ -1,5 +1,6 @@
 import { Client } from '@rmp135/imgur';
 import { getModelForClass } from '@typegoose/typegoose';
+import axios from 'axios';
 import { get, last } from 'lodash';
 import { injectable } from 'tsyringe';
 
@@ -42,12 +43,12 @@ export class ImageChecker {
           post.images = [imgurLink]
           await getModelForClass(ScrapedPostDto).findOneAndUpdate({ code: post.code }, post)
           await Util.randomSleep(30, 60)
-        
+
         } else {
           // error with imgur
           await Util.randomSleep(2, 10, TimeUnit.MINUTES)
         }
-        
+
 
       } else {
         // Refresh image from instagram
@@ -67,8 +68,7 @@ export class ImageChecker {
   }
 
   private async isInstagramImageValid(imageUrl: string): Promise<boolean> {
-    return true; 
-    const imageContent = await (await fetch(imageUrl)).text();
+    const imageContent = (await axios.get(imageUrl)).data;
     return imageContent.includes('URL signature expired');
   }
 

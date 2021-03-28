@@ -61,11 +61,13 @@ export class MarkersController {
   @Delete(':code')
   public async deleteMarker(req: Request, res: Response): Promise<Response> {
     const code = req.params.code;
-    if (req.headers.referer.includes('http://localhost:4200') || req.headers.referer.includes('admin=' + Config.Admin.DeletePass)) {
+    if (req.headers.referer.includes('admin=' + Config.Admin.DeletePass)) {
       this.logger.log('Deleting', code);
       await this.scrapedPostDto.findOneAndDelete({ code });
       return res.json({ success: true });
     }
+
+    this.logger.log('NOT deleting', code);
     return res.json({ success: false });
   }
 
