@@ -1,3 +1,5 @@
+import { Request } from 'express';
+
 export enum TimeUnit {
   MILLISECONDS, SECONDS, MINUTES
 }
@@ -46,6 +48,18 @@ export class Util {
 
     await new Promise(r => setTimeout(r, randomTime));
   }
+
+  public static getCookies(req: Request): any {
+    // We extract the raw cookies from the request headers
+    const rawCookies = req.headers?.cookie.split('; ');
+    const parsedCookies = {};
+    rawCookies.forEach(rawCookie => {
+      const [key, value] = rawCookie.split('=');
+      parsedCookies[key] = value;
+    });
+    return parsedCookies;
+  };
+
 
 }
 

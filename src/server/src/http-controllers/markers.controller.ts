@@ -3,7 +3,7 @@ import { getModelForClass } from '@typegoose/typegoose';
 import { Request, Response } from 'express';
 import { injectable } from 'tsyringe';
 
-import { Config } from '../helpers';
+import { Config, Util } from '../helpers';
 import { Logger } from '../helpers/logger';
 import { ScrapedPostDto } from '../models';
 
@@ -17,7 +17,10 @@ export class MarkersController {
   public async getMarkersAll(req: Request, res: Response): Promise<Response> {
     const referer = req?.headers?.referer || '';
     if (referer.includes('admin=' + Config.Admin.DeletePass)) {
-      res.cookie('admin', true);
+      const oneDayToSeconds = 24 * 60 * 60;
+      res.cookie('admin', true, {
+        maxAge: oneDayToSeconds
+      });
     }
 
     if (referer.includes('localhost') || referer.includes('spotscan')) {
@@ -63,8 +66,9 @@ export class MarkersController {
 
   @Delete(':code')
   public async deleteMarker(req: Request, res: Response): Promise<Response> {
-    const code = req.params.code;
-    if (req.cookies.admin) {
+    const code = req.params.code as string;
+    const cookies = Util.getCookies(req);
+    if (cookies?.admin && code) {
       this.logger.log('Deleting', code);
       await this.scrapedPostDto.findOneAndDelete({ code });
       return res.json({ success: true });
