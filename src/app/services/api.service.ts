@@ -24,6 +24,10 @@ export class ApiService {
     return this.httpClient.delete(`/api/markers/${markerCode}`);
   }
 
+  public refreshMarker(markerCode: string): Observable<any> {
+    return this.httpClient.get(`/api/markers/${markerCode}/refresh`);
+  }
+
   public discoverSpot(latitude: number, longitude: number): Observable<any> {
     return this.httpClient.get(`/api/discover/location/${latitude}/${longitude}`);
   }

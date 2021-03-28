@@ -66,7 +66,7 @@ export class AppComponent implements OnInit {
     this.infoWindow.close();
   }
 
-  deleteMarker(post: ScrapedPostDto) {
+  deletePost(post: ScrapedPostDto) {
     if (post.code) {
       this.loading++;
       this.apiService.deleteMarker(post.code).subscribe(response => {
@@ -74,6 +74,20 @@ export class AppComponent implements OnInit {
         if (get(response, 'success')) {
           const index = this.posts.findIndex(postX => postX.code === post.code);
           this.posts.splice(index, 1);
+        }
+      });
+    }
+  }
+
+  refreshPost(post: ScrapedPostDto) {
+    if (post.code) {
+      this.loading++;
+      this.apiService.refreshMarker(post.code).subscribe(response => {
+        this.loading--;
+        if (get(response, 'success')) {
+          const index = this.posts.findIndex(postX => postX.code === post.code);
+          console.log(response);
+          this.posts[index] = response;
         }
       });
     }

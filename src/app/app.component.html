@@ -13,9 +13,9 @@
       (mapClick)="closeInfoWindow()"
       (mapRightclick)="discover($event)"
     >
-      <map-marker #markerElem *ngFor="let post of posts" [options]="post.markerOptions" (mapClick)="openInfoWindow(markerElem, post)" (mapRightclick)="deleteMarker(post)"></map-marker>
+      <map-marker #markerElem *ngFor="let post of posts" [options]="post.markerOptions" (mapClick)="openInfoWindow(markerElem, post)" (mapRightclick)="deletePost(post)"></map-marker>
       <map-info-window>
-        <ss-post-info-window [post]="selectedPost" (deletePost)="deleteMarker($event)"></ss-post-info-window>
+        <ss-post-info-window [post]="selectedPost" (deletePost)="deletePost($event)" (refreshPost)="refreshPost($event)"></ss-post-info-window>
       </map-info-window>
     </google-map>
   </div>

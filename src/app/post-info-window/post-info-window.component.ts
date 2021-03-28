@@ -12,6 +12,7 @@ export class PostInfoWindowComponent implements OnInit {
 
   @Input() post: ScrapedPostDto;
   @Output() deletePost: EventEmitter<ScrapedPostDto> = new EventEmitter();
+  @Output() refreshPost: EventEmitter<ScrapedPostDto> = new EventEmitter();
 
   showCaption: boolean = false;
 
