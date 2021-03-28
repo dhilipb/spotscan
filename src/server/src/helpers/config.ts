@@ -4,7 +4,6 @@ import * as path from 'path';
 import { injectable } from 'tsyringe';
 
 import { Logger } from './logger';
-import { Util } from './util';
 
 export const Config = {
   whatIfMode: false,
@@ -12,7 +11,7 @@ export const Config = {
   Production: false,
 
   Admin: {
-    DeletePass: Util.randomString(5)
+    DeletePass: 'aa123' //Util.randomString(5)
   },
 
   Instagram: {

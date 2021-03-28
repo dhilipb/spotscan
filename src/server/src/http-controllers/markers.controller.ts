@@ -5,6 +5,7 @@ import { injectable } from 'tsyringe';
 
 import { Config, Util } from '../helpers';
 import { Logger } from '../helpers/logger';
+import { ImageChecker } from '../image-checker';
 import { ScrapedPostDto } from '../models';
 
 @injectable()
@@ -12,6 +13,10 @@ import { ScrapedPostDto } from '../models';
 export class MarkersController {
   private readonly logger: Logger = new Logger(this);
   private scrapedPostDto = getModelForClass(ScrapedPostDto);
+
+  constructor(
+    private imageChecker: ImageChecker
+  ) { }
 
   @Get('')
   public async getMarkersAll(req: Request, res: Response): Promise<Response> {
@@ -44,6 +49,28 @@ export class MarkersController {
     return res.json({ count });
   }
 
+  @Delete(':code')
+  public async deleteMarker(req: Request, res: Response): Promise<Response> {
+    const code = req.params.code as string;
+    const cookies = Util.getCookies(req);
+    if (cookies?.admin && code) {
+      this.logger.log('Deleting', code);
+      await this.scrapedPostDto.findOneAndDelete({ code });
+      return res.json({ success: true });
+    }
+
+    this.logger.log('NOT deleting', code);
+    return res.json({ success: false });
+  }
+
+  @Get(':code/refresh')
+  public async refreshMarker(req: Request, res: Response): Promise<Response> {
+    const code = req.params.code;
+    const post = await this.scrapedPostDto.findOne({ code }).exec();
+    const updatedPost = this.imageChecker.refreshImage(post);
+    return res.json(updatedPost);
+  }
+
 
   private async getMarkers(latitude: number, longitude: number, radius: number, username: string = null): Promise<any> {
     // await this.scrapedPostDto.syncIndexes();
@@ -64,18 +91,5 @@ export class MarkersController {
       .limit(1000);
   }
 
-  @Delete(':code')
-  public async deleteMarker(req: Request, res: Response): Promise<Response> {
-    const code = req.params.code as string;
-    const cookies = Util.getCookies(req);
-    if (cookies?.admin && code) {
-      this.logger.log('Deleting', code);
-      await this.scrapedPostDto.findOneAndDelete({ code });
-      return res.json({ success: true });
-    }
-
-    this.logger.log('NOT deleting', code);
-    return res.json({ success: false });
-  }
 
 }
