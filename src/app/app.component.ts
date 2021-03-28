@@ -43,6 +43,10 @@ export class AppComponent implements OnInit {
     this.mapCenter$.pipe(debounceTime(500)).subscribe((center: google.maps.LatLng) => {
       this.retrieveMarkers(center);
     });
+
+    if (window.location.href.includes('admin=')) {
+      sessionStorage.setItem('ADMIN', 'true');
+    }
   }
 
   mapInit(): void {

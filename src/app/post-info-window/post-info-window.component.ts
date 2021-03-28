@@ -14,6 +14,8 @@ export class PostInfoWindowComponent implements OnInit {
   @Output() deletePost: EventEmitter<ScrapedPostDto> = new EventEmitter();
   @Output() refreshPost: EventEmitter<ScrapedPostDto> = new EventEmitter();
 
+  public isAdmin: boolean = !!sessionStorage.getItem('ADMIN');
+
   showCaption: boolean = false;
 
   constructor() { }
