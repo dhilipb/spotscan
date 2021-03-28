@@ -33,13 +33,12 @@ export class MarkersController {
 
   @Get('count')
   public async getCount(req: Request, res: Response): Promise<Response> {
-    const model = await getModelForClass(ScrapedPostDto);
-    const count = await model.count({}).exec();
+    const count = await this.scrapedPostDto.count({}).exec();
     return res.json({ count });
   }
 
 
-  private async getMarkers(latitude: number, longitude: number, radius: number, username: string = null): Promise<ScrapedPostDto> {
+  private async getMarkers(latitude: number, longitude: number, radius: number, username: string = null): Promise<any> {
     // await this.scrapedPostDto.syncIndexes();
 
     // Max 100 kms radius
