@@ -5,7 +5,7 @@
   <div class="author" *ngIf="post?.username">
     by
     <a [href]="'https://instagram.com/' + post.username" target="_blank">@{{ post.username }}</a>
-    | {{ post?.taken_at * 1000 | dateAgo }} | ❤️{{ post?.like_count }}
+    | {{ post?.taken_at * 1000 | dateAgo }} | ❤️ {{ post?.like_count }} | <a href="#" (click)="deletePost.emit(post)">🗑</a>
   </div>
   <div class="caption" *ngIf="post?.caption && showCaption">{{ post.caption }}</div>
 </div>

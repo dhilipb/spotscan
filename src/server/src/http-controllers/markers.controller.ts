@@ -1,9 +1,9 @@
 import { Controller, Delete, Get } from '@overnightjs/core';
 import { getModelForClass } from '@typegoose/typegoose';
 import { Request, Response } from 'express';
-import { Config } from 'src/helpers';
 import { injectable } from 'tsyringe';
 
+import { Config } from '../helpers';
 import { Logger } from '../helpers/logger';
 import { ScrapedPostDto } from '../models';
 

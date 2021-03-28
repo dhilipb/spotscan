@@ -22,7 +22,7 @@ export class DiscoverController {
     const username = req.params.username;
     this.logger.log('Retrieving for user: ' + username);
     const items = await this.scraper.scrapeUser(username);
-    return res.json({ items: items.length });
+    return res.json({ username, items: items.length });
   }
 
   @Get('tag/:hashtag')
@@ -30,7 +30,7 @@ export class DiscoverController {
     const hashtag = req.params.hashtag;
     this.logger.log('Retrieving for hashtag: ' + hashtag);
     const items = await this.scraper.scrapeTag(hashtag);
-    return res.json({ items: items.length });
+    return res.json({ hashtag, items: items.length });
   }
 
   @Get('location/:latitude/:longitude')

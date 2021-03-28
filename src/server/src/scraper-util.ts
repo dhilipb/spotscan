@@ -68,6 +68,7 @@ export class ScraperUtil {
   async getByUser(username: string): Promise<UserFeedResponseItem[]> {
     this.logger.log(username, 'getByUser')
 
+
     const scrapedUserDto = getModelForClass(ScrapedUserDto)
 
     const account = await this.instagram.client.user.searchExact(username).catch((e) => this.logger.error(e))
@@ -76,13 +77,19 @@ export class ScraperUtil {
 
       await scrapedUserDto.findOneAndUpdate({ username }, { username, lastScraped: new Date() }, { upsert: true })
 
+
       const posts: UserFeedResponseItem[] = []
       for (let i = 0; i < this.PAGES_TO_SCRAPE; i++) {
         posts.push(...((await feed.items()) as UserFeedResponseItem[]))
         // await Util.randomSleep();
       }
+
+      // Add users found
+      const usersFound = this.findUsersFromPosts(posts);
+      console.log(usersFound);
+
       const filteredPosts = posts.filter(InstagramUtil.isValidImage)
-      this.logger.log(username, 'Retrieved', filteredPosts.length, 'items')
+      this.logger.log(username, 'Retrieved:', posts.length, 'Filtered:', filteredPosts.length, 'items')
       return filteredPosts
     } else {
       this.logger.log(username, 'Deleting - private or unknown user')
@@ -90,6 +97,17 @@ export class ScraperUtil {
     }
 
     return []
+  }
+
+  private findUsersFromPosts(posts: UserFeedResponseItem[]) {
+    const usersFound = new Set();
+    posts.forEach(post => {
+      let ids = (post.caption?.text ?? '').match(/@(.*?)[\s\r\n]/g) || [];
+      ids.forEach(id => {
+        usersFound.add(id.trim().replace('@', ''));
+      });
+    });
+    return usersFound;
   }
 
   async getByHashtag(hashtag: string): Promise<TagFeedResponseItemsItem[]> {
