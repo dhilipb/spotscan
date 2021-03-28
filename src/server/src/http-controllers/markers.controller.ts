@@ -16,6 +16,10 @@ export class MarkersController {
   @Get('')
   public async getMarkersAll(req: Request, res: Response): Promise<Response> {
     const referer = req?.headers?.referer || '';
+    if (referer.includes('admin=' + Config.Admin.DeletePass)) {
+      res.cookie('admin', true);
+    }
+
     if (referer.includes('localhost') || referer.includes('spotscan')) {
       return res.json(await this.getMarkers(+req.query.latitude, +req.query.longitude, +req.query.radius, req.params.user));
     }
@@ -60,7 +64,7 @@ export class MarkersController {
   @Delete(':code')
   public async deleteMarker(req: Request, res: Response): Promise<Response> {
     const code = req.params.code;
-    if (req.headers.referer.includes('admin=' + Config.Admin.DeletePass)) {
+    if (req.cookies.admin) {
       this.logger.log('Deleting', code);
       await this.scrapedPostDto.findOneAndDelete({ code });
       return res.json({ success: true });
