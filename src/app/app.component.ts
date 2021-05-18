@@ -47,6 +47,13 @@ export class AppComponent implements OnInit {
     if (window.location.href.includes('admin=')) {
       sessionStorage.setItem('ADMIN', 'true');
     }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(position => {
+        this.googleMap.center = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+        this.retrieveMarkers(this.googleMap.getCenter());
+      });
+    }
   }
 
   mapInit(): void {
@@ -115,7 +122,13 @@ export class AppComponent implements OnInit {
         post.markerOptions = {
           position: new google.maps.LatLng(get(post, 'location[0]'), get(post, 'location[1]')),
           icon: {
-            url: iconUrl,
+            path: google.maps.SymbolPath.CIRCLE,
+            scale: 8.5,
+            fillColor: "#F00",
+            fillOpacity: 0.4,
+            strokeWeight: 0.4,
+
+            url: post.images[0],
             scaledSize: new google.maps.Size(32, 32)
           } as google.maps.Icon,
           draggable: false
