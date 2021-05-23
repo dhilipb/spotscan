@@ -1,5 +1,6 @@
 import { Controller, Delete, Get } from '@overnightjs/core';
 import { getModelForClass } from '@typegoose/typegoose';
+import axios from 'axios';
 import { Request, Response } from 'express';
 import { injectable } from 'tsyringe';
 
@@ -69,6 +70,22 @@ export class MarkersController {
     const post = await this.scrapedPostDto.findOne({ code }).exec();
     const updatedPost = this.imageChecker.refreshImage(post);
     return res.json(updatedPost);
+  }
+
+  @Get('image')
+  public getImage(req: Request, res: Response): void {
+    const imageUrl = Buffer.from(req.query.image.toString(), 'base64').toString();
+    console.log(imageUrl);
+    axios({
+      method: 'get',
+      responseType: 'stream',
+      url: imageUrl,
+
+    }).then(response => {
+      response.data.pipe(res);
+    }).catch(error => {
+      res.send('');
+    })
   }
 
 

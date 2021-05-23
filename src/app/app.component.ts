@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { GoogleMap, MapInfoWindow, MapMarker } from '@angular/google-maps';
+import { ActivatedRoute } from '@angular/router';
 import MarkerClusterer from '@google/markerclusterer';
 import { get } from 'lodash';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
 import { ScrapedPostDto } from './models';
@@ -35,7 +36,8 @@ export class AppComponent implements OnInit {
   private markerClusterOptions = { imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m' };
 
   constructor(
-    private apiService: ApiService
+    private apiService: ApiService,
+    private route: ActivatedRoute
   ) { }
 
   ngOnInit() {
@@ -129,8 +131,8 @@ export class AppComponent implements OnInit {
         } as google.maps.MarkerOptions;
 
         const imageUrl = get(post, 'images[0]', '');
-        if (!imageUrl.includes('instagram.com')) {
-
+        if (imageUrl.includes('instagram.com')) {
+          post.images[0] = '/api/markers/image?image=' + btoa(imageUrl);
         }
 
         this.posts.push(post);
@@ -166,7 +168,35 @@ export class AppComponent implements OnInit {
     this.apiService.getMarkers(center.lat().toString(), center.lng().toString(), radius.toString(), user).subscribe(posts => {
       this.loading--;
       this.updatePosts(posts);
+      this.discoverMarkers();
     });
+  }
+
+  private discoverMarkers() {
+    const queryParams = this.route.snapshot.queryParams;
+    const discoverValue = get(queryParams, 'discover');
+    if (!discoverValue) {
+      return;
+    }
+
+    this.loading++;
+    let discoverApi$: Observable<ScrapedPostDto[]>;
+    if (discoverValue.startsWith('@')) {
+      discoverApi$ = this.apiService.discoverUser(discoverValue.slice(1))
+    } else if (discoverValue.startsWith('$')) {
+      discoverApi$ = this.apiService.discoverHashtag(discoverValue.slice(1))
+    } else if (discoverValue.includes(',')) {
+      const [lat, lng] = discoverValue.split(',');
+      discoverApi$ = this.apiService.discoverSpot(lat, lng);
+    }
+
+    if (discoverApi$) {
+      discoverApi$.subscribe(posts => {
+        this.loading--;
+      })
+    }
+
+
   }
 
 }
