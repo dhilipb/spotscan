@@ -49,8 +49,10 @@ export class AppComponent implements OnInit {
       this.retrieveMarkers(center);
     });
 
-    if (window.location.href.includes('admin=')) {
+    if (window.location.href.includes('admin=true')) {
       sessionStorage.setItem('ADMIN', 'true');
+    } else if (window.location.href.includes('admin=false')) {
+      sessionStorage.removeItem('ADMIN');
     }
 
     if (navigator.geolocation) {

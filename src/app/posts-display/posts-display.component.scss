@@ -3,3 +3,11 @@
   column-gap: 1em;
   margin: 5px;
 }
+
+:host ::ng-deep {
+  .map-info-window-container {
+    .author {
+      font-size: 12px;
+    }
+  }
+}
