@@ -34,7 +34,7 @@ export const Config = {
   },
 
   Imgur: {
-    ClientId: '43652b743b5a7a0'
+    ClientId: '3b99d51e8ee4c9c,0aa4838ab70c3a3,caa3db3376d731b,0b86a4d083c489b,8337f44edd78689,4e6c49802f4e1c6,804aa22adfda506'
   }
 };
 
@@ -72,7 +72,6 @@ export class ConfigUpdater {
       } else {
         const processKey = prefix.toUpperCase() + key.toUpperCase();
         const processValue = get(process.env, processKey);
-
 
         if (has(process.env, processKey)) {
           const configKey = prefix + key;

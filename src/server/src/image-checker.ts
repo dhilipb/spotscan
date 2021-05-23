@@ -1,7 +1,7 @@
 import { Client } from '@rmp135/imgur';
 import { getModelForClass, post } from '@typegoose/typegoose';
 import axios from 'axios';
-import { get, last } from 'lodash';
+import { get, isNil, last } from 'lodash';
 import { injectable } from 'tsyringe';
 
 import { Config, InstagramClient, Logger, TimeUnit, Util } from './helpers';
@@ -14,7 +14,7 @@ export class ImageChecker {
   private imgurClient: Client
 
   constructor(private instagram: InstagramClient, private scraperUtil: ScraperUtil) {
-    const clientId = Util.randomFrom(Config.Imgur.ClientId.split(','));
+    const clientId = Util.randomFrom(Config.Imgur.ClientId.split(',')).toString().trim();
     this.imgurClient = new Client(clientId);
   }
 
@@ -30,11 +30,12 @@ export class ImageChecker {
         this.logger.log(post.code, 'Checking image')
 
         const updatedImage = await this.refreshImage(post);
-        if (updatedImage) {
-          await Util.randomSleep(30, 60)
-        } else {
+        if (isNil(updatedImage)) {
           // error with imgur
           await Util.randomSleep(2, 10, TimeUnit.MINUTES)
+        } else {
+          // await Util.randomSleep(0, 5, TimeUnit.SECONDS)
+          await Util.randomSleep(1, 2, TimeUnit.MINUTES)
         }
       }
     }
@@ -52,13 +53,20 @@ export class ImageChecker {
     if (!(await this.isInstagramImageValid(imageUrl))) {
       this.logger.log(post.code, 'Invalid instagram image. Refreshing.');
 
-      const transformedPost = await this.refreshImageFromInstagram(post.mediaId);
-      imageUrl = last(transformedPost.images);
+      const transformedPost = await this.refreshImageFromInstagram(post.mediaId).catch(error => ({}));
+      imageUrl = last(get(transformedPost, 'images'));
+
+      if (!imageUrl) {
+        await getModelForClass(ScrapedPostDto).deleteOne({ code: post.code }).exec()
+        return {};
+      }
+
       post.images = [imageUrl];
+
     }
 
     this.logger.log(post.code, 'Uploading to imgur')
-    const imgurImage = await this.imgurClient.Image.upload(imageUrl, { type: 'url' }).catch(error => this.logger.log(error))
+    const imgurImage = await this.imgurClient.Image.upload(imageUrl, { type: 'url' }).catch(error => this.logger.log(error.body.data.error))
     const imgurLink = get(imgurImage, 'data.link')
 
     if (imgurLink) {
