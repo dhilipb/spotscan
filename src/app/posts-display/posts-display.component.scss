@@ -1,7 +1,13 @@
 .posts-container {
   column-width: 200px;
-  column-gap: 1em;
+  column-gap: 16px;
   margin: 5px;
+}
+
+@media screen and (max-width: 500px) {
+  .posts-container {
+    column-width: 120px;
+  }
 }
 
 :host ::ng-deep {
