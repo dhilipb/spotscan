@@ -18,10 +18,13 @@ export class AppComponent implements OnInit {
 
   @ViewChild(GoogleMap) googleMap: GoogleMap;
   @ViewChild(MapInfoWindow, { static: false }) infoWindow: MapInfoWindow;
+  @ViewChild('contentItems') contentItemsElem;
+
   loading: number = 0;
 
   // Markers
   posts: ScrapedPostDto[] = [];
+  nearPosts: ScrapedPostDto[] = [];
   selectedPost: ScrapedPostDto;
 
   defaultOptions: google.maps.MapOptions = {
@@ -115,33 +118,40 @@ export class AppComponent implements OnInit {
   }
 
   private updatePosts(posts: ScrapedPostDto[], iconUrl?: string) {
+    this.nearPosts = [];
+
     posts.forEach(post => {
+      // Marker options
+      iconUrl = post.username === 'londonunmasked' && window.location.href.includes('londonunmasked') ? 'https://i.imgur.com/yHw9r5X.png' : 'https://i.imgur.com/bsT8OCA.png';
+      post.markerOptions = {
+        position: new google.maps.LatLng(get(post, 'location[0]'), get(post, 'location[1]')),
+        icon: {
+          url: iconUrl,
+          scaledSize: new google.maps.Size(25, 25)
+        } as google.maps.Icon,
+        draggable: false
+      } as google.maps.MarkerOptions;
+
+      const imageUrl = get(post, 'images[0]', '');
+      if (imageUrl.includes('instagram.com')) {
+        post.images[0] = '/api/markers/image?image=' + btoa(imageUrl);
+      }
+
+      if (this.nearPosts.length < 50) {
+        this.nearPosts.push(post);
+      }
+
       const alreadyExists = this.posts.find(postInLoop => postInLoop.code === post.code);
       if (!alreadyExists) {
-
-        // Marker options
-        iconUrl = post.username === 'londonunmasked' && window.location.href.includes('londonunmasked') ? 'https://i.imgur.com/yHw9r5X.png' : 'https://i.imgur.com/bsT8OCA.png';
-        post.markerOptions = {
-          position: new google.maps.LatLng(get(post, 'location[0]'), get(post, 'location[1]')),
-          icon: {
-            url: iconUrl,
-            scaledSize: new google.maps.Size(25, 25)
-          } as google.maps.Icon,
-          draggable: false
-        } as google.maps.MarkerOptions;
-
-        const imageUrl = get(post, 'images[0]', '');
-        if (imageUrl.includes('instagram.com')) {
-          post.images[0] = '/api/markers/image?image=' + btoa(imageUrl);
-        }
-
         this.posts.push(post);
-        // this.markerCluster.addMarker(new google.maps.Marker({
-        //   position: post.markerOptions.position,
-        //   icon: post.markerOptions.icon
-        // }));
       }
+      // this.markerCluster.addMarker(new google.maps.Marker({
+      //   position: post.markerOptions.position,
+      //   icon: post.markerOptions.icon
+      // }));
     });
+
+    this.contentItemsElem.scrollTop = 0;
 
 
   }
@@ -167,6 +177,7 @@ export class AppComponent implements OnInit {
 
     this.apiService.getMarkers(center.lat().toString(), center.lng().toString(), radius.toString(), user).subscribe(posts => {
       this.loading--;
+      // this.nearPosts = [];
       this.updatePosts(posts);
       this.discoverMarkers();
     });

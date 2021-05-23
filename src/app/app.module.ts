@@ -8,13 +8,15 @@ import { AppComponent } from './app.component';
 import { DateAgoPipe } from './pipes/date-ago.pipe';
 import { PostInfoWindowComponent } from './post-info-window/post-info-window.component';
 import { HeaderComponent } from './header/header.component';
+import { PostsDisplayComponent } from './posts-display/posts-display.component';
 
 @NgModule({
-   declarations: [
+   declarations: [	
       AppComponent,
       PostInfoWindowComponent,
       DateAgoPipe,
-      HeaderComponent
+      HeaderComponent,
+      PostsDisplayComponent
    ],
    imports: [
       BrowserModule,

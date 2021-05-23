@@ -21,6 +21,9 @@ export class MarkersController {
 
   @Get('')
   public async getMarkersAll(req: Request, res: Response): Promise<Response> {
+
+    // await getModelForClass(ScrapedPostDto).deleteMany({ username: 'lecorgi' }).exec()
+
     const referer = req?.headers?.referer || '';
     if (referer.includes('admin=' + Config.Admin.DeletePass)) {
       const oneDayToSeconds = 24 * 60 * 60;

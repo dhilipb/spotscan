@@ -5,6 +5,19 @@
   flex-direction: column;
   height: 100%;
 
+  .content-container {
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+    height: 100%;
+  }
+
+  .content-items {
+    flex: 1 1 auto;
+    height: 100%;
+    overflow-y: auto;
+  }
+
   .gmaps-container {
     flex: 1 1 auto;
     position: relative;

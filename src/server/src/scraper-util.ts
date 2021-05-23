@@ -94,6 +94,7 @@ export class ScraperUtil {
     } else {
       this.logger.log(username, 'Deleting - private or unknown user')
       await scrapedUserDto.deleteOne({ username }).exec()
+      await getModelForClass(ScrapedPostDto).deleteMany({ username }).exec()
     }
 
     return []

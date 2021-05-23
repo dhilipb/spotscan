@@ -1,22 +1,28 @@
 <!-- Official docs at https://github.com/angular/components/blob/master/src/google-maps/README.md -->
 <div class="container">
   <ss-header [loading]="loading" [statusMessage]="statusMessage"></ss-header>
-  <div class="gmaps-container">
-    <div class="maps-crosshair"></div>
-    <google-map
-      width="100%"
-      height="100%"
-      [options]="defaultOptions"
-      (domready)="mapInit()"
-      (zoomChanged)="mapChange()"
-      (centerChanged)="mapChange()"
-      (mapClick)="closeInfoWindow()"
-      (mapRightclick)="discover($event)"
-    >
-      <map-marker #markerElem="mapMarker" *ngFor="let post of posts" [options]="post.markerOptions" (mapClick)="openInfoWindow(markerElem, post)" (mapRightclick)="deletePost(post)"></map-marker>
-      <map-info-window>
-        <ss-post-info-window [post]="selectedPost" (deletePost)="deletePost($event)" (refreshPost)="refreshPost($event)"></ss-post-info-window>
-      </map-info-window>
-    </google-map>
+  <div class="content-container">
+    <div class="gmaps-container">
+      <div class="maps-crosshair"></div>
+      <google-map
+        width="100%"
+        height="100%"
+        [options]="defaultOptions"
+        (domready)="mapInit()"
+        (zoomChanged)="mapChange()"
+        (centerChanged)="mapChange()"
+        (mapClick)="closeInfoWindow()"
+        (mapRightclick)="discover($event)"
+      >
+        <map-marker #markerElem="mapMarker" *ngFor="let post of posts" [options]="post.markerOptions" (mapClick)="openInfoWindow(markerElem, post)" (mapRightclick)="deletePost(post)"></map-marker>
+        <map-info-window>
+          <ss-post-info-window [post]="selectedPost" (deletePost)="deletePost($event)" (refreshPost)="refreshPost($event)"></ss-post-info-window>
+        </map-info-window>
+      </google-map>
+    </div>
+
+    <div class="content-items" #contentItems>
+      <ss-posts-display [posts]="nearPosts" (deletePost)="deletePost($event)" (refreshPost)="refreshPost($event)"></ss-posts-display>
+    </div>
   </div>
 </div>

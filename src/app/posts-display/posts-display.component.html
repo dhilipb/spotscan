@@ -1,0 +1,5 @@
+<div class="posts-container">
+  <div class="item" *ngFor="let post of posts">
+    <ss-post-info-window [post]="post" (deletePost)="deletePost.emit($event)" (refreshPost)="refreshPost.emit($event)"></ss-post-info-window>
+  </div>
+</div>

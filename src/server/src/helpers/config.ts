@@ -20,7 +20,7 @@ export const Config = {
       Tags: false,
       Locations: false
     },
-    ImageChecker: false,
+    ImageChecker: true,
     DeleteCookies: false
   },
 
