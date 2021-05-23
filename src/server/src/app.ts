@@ -48,5 +48,7 @@ class InstaMapsApp {
   }
 }
 
+require('dotenv').config()
+
 const app = container.resolve(InstaMapsApp)
 app.init()
