@@ -12,14 +12,20 @@
     height: 100%;
   }
 
+  @media screen and (max-width: 768px) {
+    .content-container {
+      flex-direction: column;
+    }
+  }
+
   .content-items {
-    flex: 1 1 auto;
+    flex: 1 1 50%;
     height: 100%;
     overflow-y: auto;
   }
 
   .gmaps-container {
-    flex: 1 1 auto;
+    flex: 1 1 50%;
     position: relative;
 
     ::ng-deep google-map .map-container {

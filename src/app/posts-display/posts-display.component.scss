@@ -1,19 +1,5 @@
 .posts-container {
-  // display: flex;
-  // flex-flow: column wrap;
-  // justify-content: flex-start;
-  // align-items: flex-start;
-  // max-width: 900px;
-  // height: 100vh;
   column-width: 200px;
   column-gap: 1em;
   margin: 5px;
-
-  .item {
-    // width: 300px;
-    // margin: 1%;
-  }
-}
-
-:host ::ng-deep ss-post-info-window {
 }
