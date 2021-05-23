@@ -24,28 +24,17 @@ export class ImageChecker {
     const posts = await getModelForClass(ScrapedPostDto).find().exec()
     for (let post of posts) {
       let imageUrl = last(post.images) // use the smallest image
-      this.logger.log('Checking image', post.code)
 
       if (imageUrl.includes('instagram.com')) {
         // Update image to imgur
+        this.logger.log(post.code, 'Checking image')
 
-        const updatedImage = this.refreshImage(post);
+        const updatedImage = await this.refreshImage(post);
         if (updatedImage) {
           await Util.randomSleep(30, 60)
         } else {
           // error with imgur
           await Util.randomSleep(2, 10, TimeUnit.MINUTES)
-        }
-
-      } else {
-        // Refresh image from instagram
-        const shouldRefresh = false
-
-        if (shouldRefresh) {
-          this.logger.log(post.code, 'Refreshing from instagram')
-          const transformedPost = await this.refreshImageFromInstagram(post.mediaId);
-          await getModelForClass(ScrapedPostDto).findOneAndUpdate({ mediaId: post.mediaId }, transformedPost)
-          await Util.randomSleep(2, 10)
         }
       }
     }
@@ -60,28 +49,35 @@ export class ImageChecker {
       return post;
     }
 
-    if (!this.isInstagramImageValid(imageUrl)) {
+    if (!(await this.isInstagramImageValid(imageUrl))) {
+      this.logger.log(post.code, 'Invalid instagram image. Refreshing.');
+
       const transformedPost = await this.refreshImageFromInstagram(post.mediaId);
       imageUrl = last(transformedPost.images);
       post.images = [imageUrl];
+    }
 
-      this.logger.log(post.code, 'Uploading to imgur')
-      const imgurImage = await this.imgurClient.Image.upload(imageUrl, { type: 'url' }).catch(error => this.logger.log(error))
-      const imgurLink = get(imgurImage, 'data.link')
+    this.logger.log(post.code, 'Uploading to imgur')
+    const imgurImage = await this.imgurClient.Image.upload(imageUrl, { type: 'url' }).catch(error => this.logger.log(error))
+    const imgurLink = get(imgurImage, 'data.link')
 
-      if (imgurLink) {
-        this.logger.log(post.code, 'Uploaded to imgur', imgurLink);
-        post.images = [imgurLink]
-        return await getModelForClass(ScrapedPostDto).findOneAndUpdate({ code: post.code }, post)
-      }
+    if (imgurLink) {
+      this.logger.log(post.code, 'Uploaded to imgur', imgurLink);
+      post.images = [imgurLink]
+      return await getModelForClass(ScrapedPostDto).findOneAndUpdate({ code: post.code }, post)
     }
 
     return null;
   }
 
   private async isInstagramImageValid(imageUrl: string): Promise<boolean> {
-    const imageContent = (await axios.get(imageUrl)).data;
-    return imageContent.includes('URL signature expired');
+    try {
+      const imageContent = (await axios.get(imageUrl)).data;
+      this.logger.log(imageContent.length);
+      return imageContent.includes('URL signature expired');
+    } catch (error) {
+      return false;
+    }
   }
 
   private async refreshImageFromInstagram(mediaId: string): Promise<ScrapedPostDto> {
