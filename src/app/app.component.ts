@@ -118,21 +118,20 @@ export class AppComponent implements OnInit {
       if (!alreadyExists) {
 
         // Marker options
-        iconUrl = post.username === 'londonunmasked' && window.location.href.includes('londonunmasked') ? 'https://i.imgur.com/yHw9r5X.png' : (iconUrl || 'https://i.imgur.com/bsT8OCA.png');
+        iconUrl = post.username === 'londonunmasked' && window.location.href.includes('londonunmasked') ? 'https://i.imgur.com/yHw9r5X.png' : 'https://i.imgur.com/bsT8OCA.png';
         post.markerOptions = {
           position: new google.maps.LatLng(get(post, 'location[0]'), get(post, 'location[1]')),
           icon: {
-            path: google.maps.SymbolPath.CIRCLE,
-            scale: 8.5,
-            fillColor: "#F00",
-            fillOpacity: 0.4,
-            strokeWeight: 0.4,
-
-            url: post.images[0],
-            scaledSize: new google.maps.Size(32, 32)
+            url: iconUrl,
+            scaledSize: new google.maps.Size(25, 25)
           } as google.maps.Icon,
           draggable: false
         } as google.maps.MarkerOptions;
+
+        const imageUrl = get(post, 'images[0]', '');
+        if (!imageUrl.includes('instagram.com')) {
+
+        }
 
         this.posts.push(post);
         // this.markerCluster.addMarker(new google.maps.Marker({

@@ -56,20 +56,24 @@ export class ImageChecker {
 
   public async refreshImage(post: ScrapedPostDto) {
     let imageUrl = last(post.images) // use the smallest image
+    if (!imageUrl.includes('instagram.com')) {
+      return post;
+    }
 
     if (!this.isInstagramImageValid(imageUrl)) {
       const transformedPost = await this.refreshImageFromInstagram(post.mediaId);
       imageUrl = last(transformedPost.images);
-    }
+      post.images = [imageUrl];
 
-    this.logger.log(post.code, 'Uploading to imgur')
-    const imgurImage = await this.imgurClient.Image.upload(imageUrl, { type: 'url' }).catch(error => this.logger.log(error))
-    const imgurLink = get(imgurImage, 'data.link')
+      this.logger.log(post.code, 'Uploading to imgur')
+      const imgurImage = await this.imgurClient.Image.upload(imageUrl, { type: 'url' }).catch(error => this.logger.log(error))
+      const imgurLink = get(imgurImage, 'data.link')
 
-    if (imgurLink) {
-      this.logger.log(post.code, 'Uploaded to imgur', imgurLink);
-      post.images = [imgurLink]
-      return await getModelForClass(ScrapedPostDto).findOneAndUpdate({ code: post.code }, post)
+      if (imgurLink) {
+        this.logger.log(post.code, 'Uploaded to imgur', imgurLink);
+        post.images = [imgurLink]
+        return await getModelForClass(ScrapedPostDto).findOneAndUpdate({ code: post.code }, post)
+      }
     }
 
     return null;

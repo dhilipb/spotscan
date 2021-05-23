@@ -31,7 +31,7 @@ class InstaMapsApp {
     await this.mongoClient.connect()
     await this.setupInstagram()
 
-    this.logger.log('DeletePass', Config.Admin.DeletePass);
+    this.logger.log('DeletePass ?admin=' + Config.Admin.DeletePass);
   }
 
   private async setupInstagram(): Promise<void> {
