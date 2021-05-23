@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { GoogleMap, MapInfoWindow, MapMarker } from '@angular/google-maps';
 import { ActivatedRoute } from '@angular/router';
 import MarkerClusterer from '@google/markerclusterer';
@@ -18,7 +18,7 @@ export class AppComponent implements OnInit {
 
   @ViewChild(GoogleMap) googleMap: GoogleMap;
   @ViewChild(MapInfoWindow, { static: false }) infoWindow: MapInfoWindow;
-  @ViewChild('contentItems') contentItemsElem;
+  @ViewChild('contentItems') contentItemsElem: ElementRef;
 
   loading: number = 0;
 
@@ -151,7 +151,7 @@ export class AppComponent implements OnInit {
       // }));
     });
 
-    this.contentItemsElem.scrollTop = 0;
+    this.contentItemsElem.nativeElement.scrollTop = 0;
 
 
   }
