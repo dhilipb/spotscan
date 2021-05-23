@@ -22,8 +22,6 @@ export class MarkersController {
   @Get('')
   public async getMarkersAll(req: Request, res: Response): Promise<Response> {
 
-    // await getModelForClass(ScrapedPostDto).deleteMany({ username: 'lecorgi' }).exec()
-
     const referer = req?.headers?.referer || '';
     if (referer.includes('admin=' + Config.Admin.DeletePass)) {
       const oneDayToSeconds = 24 * 60 * 60;
@@ -107,8 +105,7 @@ export class MarkersController {
         maxDistance: radius // in meters
       })
       .where(username ? 'username' : '', username)
-      .sort({ like_count: -1 })
-      .limit(1000);
+      .limit(100);
   }
 
 

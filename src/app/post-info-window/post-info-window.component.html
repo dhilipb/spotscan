@@ -1,6 +1,6 @@
 <div class="map-info-window-container" *ngIf="post">
   <a [href]="'https://instagram.com/p/' + post?.code" target="_blank">
-    <img [src]="(post?.images)[0]" class="insta-image" />
+    <img [src]="(post?.images)[0]" class="insta-image" onerror="this.parentNode.parentNode.style.display = 'none'" />
   </a>
   <div class="author" *ngIf="post?.username">
     <a [href]="'https://instagram.com/' + post.username" target="_blank">@{{ post.username }}</a>
